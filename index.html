@@ -17,6 +17,39 @@
 </head>
 
 <body>
+  <!-- ================================================================
+       LOGIN SCREEN
+       ================================================================ -->
+  <div id="login-screen" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:40px;width:100%;max-width:400px;text-align:center">
+      <div style="margin-bottom:24px">
+        <svg width="48" height="48" viewBox="0 0 36 36" fill="none" style="margin-bottom:12px">
+          <rect width="36" height="36" rx="8" fill="url(#login-grad)"/>
+          <text x="18" y="23" text-anchor="middle" font-family="'DM Sans', sans-serif" font-weight="700" font-size="16" fill="white">GS</text>
+          <defs>
+            <linearGradient id="login-grad" x1="0" y1="0" x2="36" y2="36">
+              <stop stop-color="#4f8ef7"/>
+              <stop offset="1" stop-color="#7c5ef7"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <h2 style="color:var(--text);font-family:var(--font);font-size:20px;font-weight:600;margin:0">Plataforma PFO</h2>
+        <p style="color:var(--muted);font-size:13px;margin:6px 0 0">Global Service Engenharia</p>
+      </div>
+      <form id="login-form" autocomplete="on">
+        <input type="text" id="login-user" placeholder="Usuário" required
+          style="width:100%;padding:12px 16px;margin-bottom:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;font-family:var(--font);box-sizing:border-box;outline:none" />
+        <input type="password" id="login-pass" placeholder="Senha" required
+          style="width:100%;padding:12px 16px;margin-bottom:16px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;font-family:var(--font);box-sizing:border-box;outline:none" />
+        <button type="submit" id="login-btn"
+          style="width:100%;padding:12px;background:linear-gradient(135deg,#4f8ef7,#7c5ef7);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font)">
+          Entrar
+        </button>
+        <p id="login-error" style="color:var(--red);font-size:12px;margin:12px 0 0;display:none"></p>
+      </form>
+    </div>
+  </div>
+
   <!-- Mobile Menu Toggle -->
   <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">☰</button>
 
@@ -528,6 +561,207 @@
       </div>
     </div>
   </main>
+
+  <!-- Auth + Data Bootstrap -->
+  <script>
+    (function () {
+      /**
+       * checkAuth — verifica se há token salvo e esconde a tela de login.
+       * NÃO remove o elemento do DOM, apenas esconde via display:none.
+       */
+      function checkAuth() {
+        var token = localStorage.getItem('pfo_token');
+        if (token) {
+          document.getElementById('login-screen').style.display = 'none';
+          _carregarDadosReais(token);
+        }
+      }
+
+      /**
+       * _carregarDadosReais — chama /api/dados com o token do localStorage
+       * e popula o dashboard com os dados reais (22 PFOs no backend).
+       */
+      async function _carregarDadosReais(token) {
+        try {
+          var res = await fetch('/api/dados', {
+            headers: {
+              'Authorization': 'Bearer ' + token,
+              'Content-Type': 'application/json'
+            }
+          });
+          if (!res.ok) throw new Error('Erro HTTP ' + res.status);
+          var data = await res.json();
+          var pfos = data.pfos || [];
+          var ccs = data.centros_custo || {};
+          var apr = data.aprovacoes || {};
+
+          // KPIs
+          var rec = 0, cst = 0, a = 0, e = 0, p = 0, r = 0;
+          pfos.forEach(function (pfo) {
+            rec += ((pfo.dre && pfo.dre.receita && pfo.dre.receita.projetado) || 0) * 1000;
+            cst += ((pfo.dre && pfo.dre.custo && pfo.dre.custo.projetado) || 0) * 1000;
+            var st = _getStatus(pfo, apr);
+            if (st === 'aprovado') a++;
+            else if (st === 'enviado') e++;
+            else if (st === 'reprovado') r++;
+            else p++;
+          });
+
+          var resultado = rec - cst;
+          var margem = rec > 0 ? (resultado / rec) * 100 : 0;
+          var tot = a + e + p + r || 1;
+
+          _setText('kpi-rec', _fmtNum(rec / 1000));
+          _setText('kpi-rec-sub', 'resultado: R$ ' + _fmtNum(resultado / 1000) + 'k');
+          _setText('kpi-mar', margem.toFixed(1));
+          _setText('kpi-pfo', pfos.length);
+          _setText('kpi-pfo-sub', Object.keys(ccs).length + ' centros ativos');
+          _setText('kpi-pen', p + r);
+          _setText('badge-p', p + r);
+          _setText('cycle-label', 'Ciclo: ' + pfos.length + ' PFOs');
+
+          // Score ring
+          var sc = Math.round((a / tot) * 100);
+          _setText('score-n', sc);
+          var ci = document.getElementById('score-c');
+          if (ci) {
+            var circumference = 276.5;
+            setTimeout(function () {
+              ci.style.strokeDashoffset = circumference - (circumference * sc) / 100;
+            }, 100);
+            var col = sc >= 80 ? 'var(--green)' : sc >= 50 ? 'var(--amber)' : 'var(--red)';
+            ci.style.stroke = col;
+            var ss = document.getElementById('score-s');
+            if (ss) {
+              ss.textContent = sc >= 80 ? '✓ Saudável' : sc >= 50 ? '⚠ Atenção' : '✗ Crítico';
+              ss.style.color = col;
+            }
+          }
+
+          // Progress bars
+          var pct = function (n) { return Math.round((n / tot) * 100); };
+          _setText('pr-apr', a + ' (' + pct(a) + '%)');
+          _setText('pr-env', e + ' (' + pct(e) + '%)');
+          _setText('pr-pen', p + ' (' + pct(p) + '%)');
+          _setText('pr-rep', r + ' (' + pct(r) + '%)');
+          setTimeout(function () {
+            _setWidth('pf-apr', pct(a) + '%');
+            _setWidth('pf-env', pct(e) + '%');
+            _setWidth('pf-pen', pct(p) + '%');
+            _setWidth('pf-rep', pct(r) + '%');
+          }, 200);
+
+          // Stats
+          _setText('st-apr', a);
+          _setText('st-env', e);
+          _setText('st-pen', p);
+          _setText('st-rep', r);
+
+          // Approval KPIs
+          _setText('ap-apr', a);
+          _setText('ap-env', e);
+          _setText('ap-rep', r);
+
+          // Status pill
+          var pill = document.getElementById('status-pill');
+          var stxt = document.getElementById('status-text');
+          if (pill && stxt) {
+            if (r > 0) {
+              pill.className = 'status-pill warn';
+              stxt.textContent = 'Atenção requerida';
+            } else if (sc >= 70) {
+              pill.className = 'status-pill ok';
+              stxt.textContent = 'Ciclo saudável';
+            } else {
+              pill.className = 'status-pill warn';
+              stxt.textContent = 'Ciclo em andamento';
+            }
+          }
+
+          console.log('[Auth] Dados reais carregados: ' + pfos.length + ' PFOs, ' + Object.keys(ccs).length + ' centros');
+        } catch (err) {
+          console.error('[Auth] Erro ao carregar dados reais:', err);
+          var pill = document.getElementById('status-pill');
+          var stxt = document.getElementById('status-text');
+          if (pill) pill.className = 'status-pill crit';
+          if (stxt) stxt.textContent = 'Erro ao carregar';
+        }
+      }
+
+      function _getStatus(pfo, apr) {
+        var key = pfo.cc_codigo || pfo.arquivo || '';
+        if (apr[key]) return apr[key].status || 'pendente';
+        return 'pendente';
+      }
+
+      function _fmtNum(n) {
+        return Number(n).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      }
+
+      function _setText(id, val) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = val;
+      }
+
+      function _setWidth(id, val) {
+        var el = document.getElementById(id);
+        if (el) el.style.width = val;
+      }
+
+      // Login form handler
+      document.addEventListener('DOMContentLoaded', function () {
+        // Check existing auth on load
+        checkAuth();
+
+        var form = document.getElementById('login-form');
+        if (form) {
+          form.addEventListener('submit', async function (evt) {
+            evt.preventDefault();
+            var btn = document.getElementById('login-btn');
+            var errEl = document.getElementById('login-error');
+            var user = document.getElementById('login-user').value.trim();
+            var pass = document.getElementById('login-pass').value;
+
+            btn.disabled = true;
+            btn.textContent = 'Entrando...';
+            if (errEl) errEl.style.display = 'none';
+
+            try {
+              var res = await fetch('/api/auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ usuario: user, senha: pass })
+              });
+
+              var body = await res.json();
+
+              if (!res.ok || !body.token) {
+                throw new Error(body.error || 'Credenciais inválidas');
+              }
+
+              // Salvar token no localStorage com chave 'pfo_token'
+              localStorage.setItem('pfo_token', body.token);
+
+              // Esconder login screen (NÃO remover do DOM)
+              document.getElementById('login-screen').style.display = 'none';
+
+              // Carregar dados reais com o token
+              _carregarDadosReais(body.token);
+
+            } catch (err) {
+              if (errEl) {
+                errEl.textContent = err.message;
+                errEl.style.display = 'block';
+              }
+            } finally {
+              btn.disabled = false;
+              btn.textContent = 'Entrar';
+            }
+          });
+        }
+      });
+    })();
+  </script>
 
   <!-- App Entry Point -->
   <script type="module" src="assets/js/app.js"></script>
