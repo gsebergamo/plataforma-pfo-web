@@ -58,7 +58,7 @@ function calcMonthlyAgg(pfos) {
   // Calcular despesa = custo + cliente e resultado = contrato - despesa
   Object.values(months).forEach(m => {
     m.despesa = m.custo + m.cliente;
-    m.resultado = m.receita - m.despesa;
+    m.resultado = m.contrato - m.despesa;
   });
 
   return Object.values(months).sort((a, b) => a.mes - b.mes);
