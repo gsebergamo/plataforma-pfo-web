@@ -68,8 +68,8 @@ function calcMonthlyAgg(pfos) {
  * Calcula KPIs consolidados 2026 (soma total do ano).
  */
 function calcKPIs2026(pfos) {
-  // Usa dist filtrado por ano=2026 para excluir anos anteriores/posteriores
-  // Valores no dist estão em R$ (não em R$k como dre.projetado)
+  // Usa dist filtrado por ano=2026 para excluir anos anteriores/posteriores ao ciclo
+  // Valores em dist estão em R$k (mesma escala de dre.projetado) — converte para R$ ao final
   let contrato = 0, receita = 0, impostos = 0, custo = 0, cliente = 0;
   pfos.forEach(pfo => {
     const dist = pfo.dist || {};
@@ -85,8 +85,10 @@ function calcKPIs2026(pfos) {
       });
     });
   });
-  // Os valores do dist já estão em R$k (mesma escala do dre.projetado) — multiplicar por 1000 para R$
-  contrato *= 1000; receita *= 1000; impostos *= 1000; custo *= 1000; cliente *= 1000;
+  // Converter R$k -> R$ (todos os campos estão em R$k no dist)
+  const toR = v => v * 1000;
+  contrato = toR(contrato); receita = toR(receita); impostos = toR(impostos);
+  custo = toR(custo); cliente = toR(cliente);
   const despesa = custo + cliente;
   const resultado = receita - despesa;
   const margem = contrato > 0 ? resultado / contrato : 0;
@@ -98,14 +100,13 @@ function calcKPIs2026(pfos) {
  * Usa classificação real do CC (eh_backoffice), nunca heurística por nome.
  */
 function calcBackoffice(pfos, centros_custo) {
-  // Identificar CCs backoffice via eh_backoffice (nunca por nome)
+  // CCs backoffice via campo eh_backoffice (nunca por nome)
   const boCCKeys = new Set(
     Object.entries(centros_custo || {})
       .filter(([, cc]) => cc.eh_backoffice)
       .map(([k]) => k)
   );
-
-  // Mapear arquivo PFO → CC backoffice via centros_custo[key].arquivos.pfo.nome
+  // Mapear arquivo PFO -> CC backoffice
   const boArquivos = new Set();
   Object.entries(centros_custo || {}).forEach(([key, cc]) => {
     if (!cc.eh_backoffice) return;
@@ -113,7 +114,7 @@ function calcBackoffice(pfos, centros_custo) {
     if (pfoNome) boArquivos.add(pfoNome);
   });
 
-  // Usar dist filtrado por ano=2026 para receita e custo
+  // Usar dist filtrado por ano=2026 (valores em R$k -> R$ após *1000)
   let custoBackoffice = 0, receitaTotal = 0;
   pfos.forEach(pfo => {
     const dist = pfo.dist || {};
@@ -126,9 +127,7 @@ function calcBackoffice(pfos, centros_custo) {
     const isBO = boArquivos.has(pfo.arquivo) ||
       (pfo.projeto && pfo.projeto.startsWith('GSE') && boCCKeys.size > 0);
 
-    if (isBO) {
-      custoBackoffice += sum2026('custo');
-    }
+    if (isBO) custoBackoffice += sum2026('custo');
   });
 
   const ratio = receitaTotal > 0 ? custoBackoffice / receitaTotal : 0;
@@ -173,7 +172,7 @@ function getMetrics(data) {
 
   // Projetos ordenados por margem (piores primeiro)
   const projetos = pfos.map(pfo => {
-    // Usar dist filtrado por ano=2026 (em R$k) para valores corretos da competência
+    // Usar dist filtrado por ano=2026 (valores em R$k) -> converter para R$
     const dist = pfo.dist || {};
     const sum2026 = (campo) => (dist[campo] || [])
       .filter(e => e.ano === CURRENT_YEAR)
