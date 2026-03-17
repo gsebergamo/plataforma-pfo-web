@@ -75,6 +75,45 @@ module.exports = async function handler(req, res) {
         const pfoCount = Array.isArray(rawData.pfos) ? rawData.pfos.length : 0;
         const ccCount = rawData.centros_custo ? Object.keys(rawData.centros_custo).length : 0;
         const keys = Object.keys(rawData);
+
+        // Sample PFO structure (first PFO, keys only + sample values)
+        let samplePfo = null;
+        if (pfoCount > 0) {
+          const first = rawData.pfos[0];
+          samplePfo = {
+            _keys: Object.keys(first),
+            projeto: first.projeto,
+            cc_codigo: first.cc_codigo,
+            arquivo: first.arquivo,
+            mes_ref: first.mes_ref,
+            has_dre: !!first.dre,
+            dre_keys: first.dre ? Object.keys(first.dre) : [],
+            dre_receita_sample: first.dre?.receita,
+            dre_custo_sample: first.dre?.custo,
+          };
+        }
+
+        // Sample centros_custo structure
+        const ccKeys = Object.keys(rawData.centros_custo || {}).slice(0, 3);
+        let sampleCC = null;
+        if (ccKeys.length > 0) {
+          sampleCC = {
+            first_3_keys: ccKeys,
+            sample_value: rawData.centros_custo[ccKeys[0]],
+          };
+        }
+
+        // Sample aprovacoes structure
+        const aprKeys = Object.keys(rawData.aprovacoes || {}).slice(0, 2);
+        let sampleApr = null;
+        if (aprKeys.length > 0) {
+          sampleApr = {
+            total_keys: Object.keys(rawData.aprovacoes).length,
+            first_2_keys: aprKeys,
+            sample_value: rawData.aprovacoes[aprKeys[0]],
+          };
+        }
+
         checks.data.content = {
           status: '✅ OK',
           total_pfos: pfoCount,
@@ -83,6 +122,9 @@ module.exports = async function handler(req, res) {
           has_pfos_mensais: Array.isArray(rawData.pfos_mensais),
           has_aprovacoes: !!rawData.aprovacoes,
           has_config: !!rawData.config,
+          sample_pfo: samplePfo,
+          sample_centro_custo: sampleCC,
+          sample_aprovacao: sampleApr,
         };
       } catch (e) {
         checks.data.content = {
