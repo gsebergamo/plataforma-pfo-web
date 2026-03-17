@@ -6,7 +6,7 @@
  * - Competência: 2026 apenas
  * - Meses < mês atual = REALIZADO, >= mês atual = PLANEJADO
  * - DESPESA = CUSTO + CLIENTE
- * - RESULTADO = RECEITA - DESPESA
+ * - RESULTADO = CONTRATO - DESPESA
  * - MARGEM = RESULTADO / CONTRATO (nunca soma margem diretamente)
  * - BACKOFFICE = custo CCs backoffice / receita total 2026
  *
@@ -55,7 +55,7 @@ function calcMonthlyAgg(pfos) {
     });
   });
 
-  // Calcular despesa = custo + cliente e resultado = receita - despesa
+  // Calcular despesa = custo + cliente e resultado = contrato - despesa
   Object.values(months).forEach(m => {
     m.despesa = m.custo + m.cliente;
     m.resultado = m.receita - m.despesa;
@@ -69,6 +69,8 @@ function calcMonthlyAgg(pfos) {
  */
 function calcKPIs2026(pfos){
   // Soma dist filtrado por ano=2026 (R$k) -> converte para R$
+  // RESULTADO = CONTRATO - DESPESA (conforme regra de negócio)
+  // MARGEM = RESULTADO / CONTRATO
   let ct=0,rc=0,imp=0,cs=0,cl=0;
   pfos.forEach(pfo=>{
     const dist=pfo.dist||{};
@@ -76,7 +78,9 @@ function calcKPIs2026(pfos){
     ct+=s('contrato');rc+=s('receita');imp+=s('impostos');cs+=s('custo');cl+=s('cliente');
   });
   ct*=1000;rc*=1000;imp*=1000;cs*=1000;cl*=1000;
-  const despesa=cs+cl,resultado=rc-despesa,margem=ct>0?resultado/ct:0;
+  const despesa=cs+cl;
+  const resultado=ct-despesa;  // RESULTADO = CONTRATO - DESPESA
+  const margem=ct>0?resultado/ct:0;  // MARGEM = RESULTADO / CONTRATO
   return{contrato:ct,receita:rc,impostos:imp,custo:cs,cliente:cl,despesa,resultado,margem};
 }
 
@@ -142,12 +146,14 @@ function getMetrics(data) {
 
   // Projetos ordenados por margem (piores primeiro)
   const projetos = pfos.map(pfo => {
-    const dist = pfo.dist || {};
-    const s26 = (c) => (dist[c]||[]).filter(e=>e.ano===CURRENT_YEAR).reduce((a,e)=>a+safeNumber(e.valor),0)*1000;
-    const rc=s26('receita'), ct=s26('contrato'), cs=s26('custo'), cl=s26('cliente'), imp=s26('impostos');
-    const dp=cs+cl, res=rc-dp, mg=ct>0?res/ct:0;
+    const dist=pfo.dist||{};
+    const s26=(c)=>(dist[c]||[]).filter(e=>e.ano===CURRENT_YEAR).reduce((a,e)=>a+safeNumber(e.valor),0)*1000;
+    const rc=s26('receita'),ct=s26('contrato'),cs=s26('custo'),cl=s26('cliente'),imp=s26('impostos');
+    const dp=cs+cl;
+    const res=ct-dp;  // RESULTADO = CONTRATO - DESPESA
+    const mg=ct>0?res/ct:0;  // MARGEM = RESULTADO / CONTRATO
     const nome=(pfo.arquivo||pfo.projeto||'—').replace('PFO_','').replace(/\.xlsm?$/,'').split('_2026')[0];
-    return {...pfo,_rc:rc,_ct:ct,_cs:cs,_cl:cl,_imp:imp,_dp:dp,_res:res,_mg:mg,_nome:nome,_status:getStatus(pfo,apr)};
+    return{...pfo,_rc:rc,_ct:ct,_cs:cs,_cl:cl,_imp:imp,_dp:dp,_res:res,_mg:mg,_nome:nome,_status:getStatus(pfo,apr)};
   }).sort((a,b)=>a._mg-b._mg);
 
   // Alertas
@@ -280,7 +286,7 @@ function renderKPIGrid2026(kpis, bo) {
     <div class="kpi2-card">
       <div class="kpi2-label">RESULTADO 2026</div>
       <div class="kpi2-value" style="color:${kpis.resultado >= 0 ? '#10b981' : '#f87171'}">R$ ${fmtM(kpis.resultado)}</div>
-      <div class="kpi2-sub">receita − despesa</div>
+      <div class="kpi2-sub">contrato − despesa</div>
     </div>
     <div class="kpi2-card">
       <div class="kpi2-label">MARGEM 2026</div>
