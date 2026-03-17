@@ -271,9 +271,9 @@ function renderKPIGrid2026(kpis, bo) {
   const mgColor = kpis.margem >= 0.15 ? '#10b981' : kpis.margem >= 0.05 ? '#f59e0b' : '#f87171';
   const boColor = bo.ratio <= 0.08 ? '#10b981' : bo.ratio <= 0.15 ? '#f59e0b' : '#f87171';
   const resColor = kpis.resultado >= 0 ? '#10b981' : '#f87171';
+  const boCusto = bo.custoBackoffice;
 
   el.innerHTML = `
-    <!-- Linha 1: Contrato / Receita Total / Receita Líquida -->
     <div class="kpi2-card">
       <div class="kpi2-label">CONTRATO TOTAL 2026</div>
       <div class="kpi2-value">R$ ${fmtM(kpis.contrato)}</div>
@@ -289,7 +289,6 @@ function renderKPIGrid2026(kpis, bo) {
       <div class="kpi2-value" style="color:#818cf8">R$ ${fmtM(kpis.receita_liquida)}</div>
       <div class="kpi2-sub">receita − impostos (R$${fmtM(kpis.impostos)})</div>
     </div>
-    <!-- Linha 2: Despesa Total com subdivisões + Resultado + Margem -->
     <div class="kpi2-card kpi2-card-despesa">
       <div class="kpi2-label">DESPESA TOTAL 2026</div>
       <div class="kpi2-value" style="color:#f87171">R$ ${fmtM(kpis.despesa)}</div>
@@ -297,6 +296,8 @@ function renderKPIGrid2026(kpis, bo) {
         <span class="kpi2-sub-item">Fat Direto <strong>R$${fmtM(kpis.fat_direto)}</strong></span>
         <span class="kpi2-sub-sep">·</span>
         <span class="kpi2-sub-item">Fat Global <strong>R$${fmtM(kpis.fat_global)}</strong></span>
+        <span class="kpi2-sub-sep">·</span>
+        <span class="kpi2-sub-item kpi2-backoffice">Backoffice <strong>R$${fmtM(boCusto)}</strong></span>
         ${kpis.plrCusto > 0 ? `<span class="kpi2-sub-sep">·</span><span class="kpi2-sub-item kpi2-nao-op">N.Op. PLR <strong>R$${fmtM(kpis.plrCusto)}</strong></span>` : ''}
         ${kpis.novaCusto > 0 ? `<span class="kpi2-sub-sep">·</span><span class="kpi2-sub-item kpi2-obra">Obra N.Sede <strong>R$${fmtM(kpis.novaCusto)}</strong></span>` : ''}
       </div>
@@ -311,7 +312,6 @@ function renderKPIGrid2026(kpis, bo) {
       <div class="kpi2-value kpi2-big" style="color:${mgColor}">${(kpis.margem * 100).toFixed(2)}%</div>
       <div class="kpi2-sub">resultado / contrato</div>
     </div>
-    <!-- Backoffice -->
     <div class="kpi2-card">
       <div class="kpi2-label">BACKOFFICE / RECEITA</div>
       <div class="kpi2-value kpi2-big" style="color:${boColor}">${(bo.ratio * 100).toFixed(1)}%</div>
