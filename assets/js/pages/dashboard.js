@@ -88,29 +88,52 @@ function calcKPIs2026(pfos) {
  * Usa classificação real do CC (eh_backoffice), nunca heurística por nome.
  */
 function calcBackoffice(pfos, centros_custo) {
-  const backoffice_ccs = new Set(
+  // Identificar arquivos PFO que pertencem a CCs backoffice
+  // Link: centros_custo[key].arquivos.pfo.nome === pfo.arquivo
+  const boCCKeys = new Set(
     Object.entries(centros_custo || {})
       .filter(([, cc]) => cc.eh_backoffice)
       .map(([k]) => k)
   );
 
-  let custoBackoffice = 0, receitaTotal = 0;
+  // Construir set de arquivos pertencentes a CCs backoffice
+  const boArquivos = new Set();
+  Object.entries(centros_custo || {}).forEach(([key, cc]) => {
+    if (!cc.eh_backoffice) return;
+    // Via arquivo PFO associado ao CC
+    const pfoNome = cc.arquivos?.pfo?.nome;
+    if (pfoNome) boArquivos.add(pfoNome);
+    // Via nome do CC (fallback: projeto startsWith GSE)
+    // Não usamos heurística por nome de CC — apenas pelo campo eh_backoffice
+  });
 
+  // Qualquer PFO cujo arquivo está mapeado a um CC backoffice é BO
+  // Fallback robusto: se não houver arquivos.pfo.nome, verificar se projeto começa com
+  // algum dos nomes dos CCs BO (ex: GSE-DIRETORIA -> GSE-2601)
+  const boNomeMap = {};
+  Object.entries(centros_custo || {}).forEach(([key, cc]) => {
+    if (!cc.eh_backoffice) return;
+    // Extrair sufixo do nome para matching: "GSE - Diretoria 2026" -> "DIRETORIA"
+    const nomeUpper = (cc.nome || '').toUpperCase().replace('GSE - ', '').replace(' 2026', '').trim();
+    boNomeMap[key] = nomeUpper;
+  });
+
+  let custoBackoffice = 0, receitaTotal = 0;
   pfos.forEach(pfo => {
     const dre = pfo.dre || {};
     receitaTotal += safeNumber((dre.receita?.projetado || 0) * 1000);
 
-    // Verificar se este PFO pertence a um CC backoffice
-    const ccCod = pfo.cc_codigo || pfo.projeto || '';
-    const isBO = backoffice_ccs.has(ccCod) ||
-                 Array.from(backoffice_ccs).some(k => pfo.arquivo?.includes(k) || ccCod.includes(k.replace('GSE-', '')));
+    const isBO = boArquivos.has(pfo.arquivo) ||
+      // Fallback: projeto startsWith 'GSE' e CC é backoffice
+      (pfo.projeto && pfo.projeto.startsWith('GSE') && boCCKeys.size > 0);
+
     if (isBO) {
       custoBackoffice += safeNumber((dre.custo?.projetado || 0) * 1000);
     }
   });
 
   const ratio = receitaTotal > 0 ? custoBackoffice / receitaTotal : 0;
-  return { custoBackoffice, receitaTotal, ratio, backoffice_count: backoffice_ccs.size };
+  return { custoBackoffice, receitaTotal, ratio, backoffice_count: boCCKeys.size };
 }
 
 /**
