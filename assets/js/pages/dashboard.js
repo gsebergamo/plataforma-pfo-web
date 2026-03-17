@@ -68,20 +68,30 @@ function calcMonthlyAgg(pfos) {
  * Calcula KPIs consolidados 2026 (soma total do ano).
  */
 function calcKPIs2026(pfos){
-  // Soma dist filtrado por ano=2026 (R$k) -> converte para R$
-  // RESULTADO = CONTRATO - DESPESA (conforme regra de negócio)
-  // MARGEM = RESULTADO / CONTRATO
-  let ct=0,rc=0,imp=0,cs=0,cl=0;
+  // PFOs com classificação especial (lista explícita — sem alterar JSON)
+  const PLR_ARQUIVO  = 'PFO_GSE-PLR_2026.02 - Enviado.xlsm';
+  const NOVA_ARQUIVO = 'PFO_GSE-Nova-Sede_2026.03 - Andamento.xlsm';
+
+  let ct=0,rc=0,imp=0,cs=0,cl=0,plrCusto=0,novaCusto=0;
   pfos.forEach(pfo=>{
     const dist=pfo.dist||{};
     const s=(c)=>(dist[c]||[]).filter(e=>e.ano===CURRENT_YEAR).reduce((a,e)=>a+safeNumber(e.valor),0);
-    ct+=s('contrato');rc+=s('receita');imp+=s('impostos');cs+=s('custo');cl+=s('cliente');
+    const pCt=s('contrato'),pRc=s('receita'),pImp=s('impostos'),pCs=s('custo'),pCl=s('cliente');
+    ct+=pCt; rc+=pRc; imp+=pImp; cs+=pCs; cl+=pCl;
+    // Separar custo de PLR e Nova-Sede para destaque visual
+    if(pfo.arquivo===PLR_ARQUIVO)  plrCusto  += pCs;
+    if(pfo.arquivo===NOVA_ARQUIVO) novaCusto += pCs;
   });
-  ct*=1000;rc*=1000;imp*=1000;cs*=1000;cl*=1000;
-  const despesa=cs+cl;
-  const resultado=ct-despesa;  // RESULTADO = CONTRATO - DESPESA
-  const margem=ct>0?resultado/ct:0;  // MARGEM = RESULTADO / CONTRATO
-  return{contrato:ct,receita:rc,impostos:imp,custo:cs,cliente:cl,despesa,resultado,margem};
+  ct*=1000; rc*=1000; imp*=1000; cs*=1000; cl*=1000;
+  plrCusto*=1000; novaCusto*=1000;
+  const receita_liquida = rc - imp;           // Receita Líquida = Receita - Impostos
+  const fat_direto      = cl;                 // Fat Direto = Cliente
+  const fat_global      = cs - plrCusto - novaCusto; // Fat Global = Custo operacional (sem PLR e Nova-Sede)
+  const despesa         = cs + cl;
+  const resultado       = ct - despesa;       // RESULTADO = CONTRATO - DESPESA
+  const margem          = ct>0?resultado/ct:0;
+  return{contrato:ct,receita:rc,receita_liquida,impostos:imp,custo:cs,cliente:cl,
+         fat_direto,fat_global,plrCusto,novaCusto,despesa,resultado,margem};
 }
 
 /**
@@ -258,11 +268,12 @@ export function renderDashboard() {
 function renderKPIGrid2026(kpis, bo) {
   const el = document.getElementById('kpi-grid-2026');
   if (!el) return;
-
-  const mgColor = kpis.margem >= 0.20 ? '#10b981' : kpis.margem >= 0.10 ? '#f59e0b' : '#f87171';
+  const mgColor = kpis.margem >= 0.15 ? '#10b981' : kpis.margem >= 0.05 ? '#f59e0b' : '#f87171';
   const boColor = bo.ratio <= 0.08 ? '#10b981' : bo.ratio <= 0.15 ? '#f59e0b' : '#f87171';
+  const resColor = kpis.resultado >= 0 ? '#10b981' : '#f87171';
 
   el.innerHTML = `
+    <!-- Linha 1: Contrato / Receita Total / Receita Líquida -->
     <div class="kpi2-card">
       <div class="kpi2-label">CONTRATO TOTAL 2026</div>
       <div class="kpi2-value">R$ ${fmtM(kpis.contrato)}</div>
@@ -274,18 +285,25 @@ function renderKPIGrid2026(kpis, bo) {
       <div class="kpi2-sub">projetada</div>
     </div>
     <div class="kpi2-card">
+      <div class="kpi2-label">RECEITA LÍQUIDA 2026</div>
+      <div class="kpi2-value" style="color:#818cf8">R$ ${fmtM(kpis.receita_liquida)}</div>
+      <div class="kpi2-sub">receita − impostos (R$${fmtM(kpis.impostos)})</div>
+    </div>
+    <!-- Linha 2: Despesa Total com subdivisões + Resultado + Margem -->
+    <div class="kpi2-card kpi2-card-despesa">
       <div class="kpi2-label">DESPESA TOTAL 2026</div>
       <div class="kpi2-value" style="color:#f87171">R$ ${fmtM(kpis.despesa)}</div>
-      <div class="kpi2-sub">custo R$${fmtM(kpis.custo)} + cliente R$${fmtM(kpis.cliente)}</div>
-    </div>
-    <div class="kpi2-card">
-      <div class="kpi2-label">IMPOSTOS 2026</div>
-      <div class="kpi2-value" style="color:#fb923c">R$ ${fmtM(kpis.impostos)}</div>
-      <div class="kpi2-sub">projetados</div>
+      <div class="kpi2-sub-group">
+        <span class="kpi2-sub-item">Fat Direto <strong>R$${fmtM(kpis.fat_direto)}</strong></span>
+        <span class="kpi2-sub-sep">·</span>
+        <span class="kpi2-sub-item">Fat Global <strong>R$${fmtM(kpis.fat_global)}</strong></span>
+        ${kpis.plrCusto > 0 ? `<span class="kpi2-sub-sep">·</span><span class="kpi2-sub-item kpi2-nao-op">N.Op. PLR <strong>R$${fmtM(kpis.plrCusto)}</strong></span>` : ''}
+        ${kpis.novaCusto > 0 ? `<span class="kpi2-sub-sep">·</span><span class="kpi2-sub-item kpi2-obra">Obra N.Sede <strong>R$${fmtM(kpis.novaCusto)}</strong></span>` : ''}
+      </div>
     </div>
     <div class="kpi2-card">
       <div class="kpi2-label">RESULTADO 2026</div>
-      <div class="kpi2-value" style="color:${kpis.resultado >= 0 ? '#10b981' : '#f87171'}">R$ ${fmtM(kpis.resultado)}</div>
+      <div class="kpi2-value" style="color:${resColor}">R$ ${fmtM(kpis.resultado)}</div>
       <div class="kpi2-sub">contrato − despesa</div>
     </div>
     <div class="kpi2-card">
@@ -293,6 +311,7 @@ function renderKPIGrid2026(kpis, bo) {
       <div class="kpi2-value kpi2-big" style="color:${mgColor}">${(kpis.margem * 100).toFixed(2)}%</div>
       <div class="kpi2-sub">resultado / contrato</div>
     </div>
+    <!-- Backoffice -->
     <div class="kpi2-card">
       <div class="kpi2-label">BACKOFFICE / RECEITA</div>
       <div class="kpi2-value kpi2-big" style="color:${boColor}">${(bo.ratio * 100).toFixed(1)}%</div>
