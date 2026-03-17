@@ -730,11 +730,10 @@
         if (form) {
           form.addEventListener('submit', loginExec);
         }
+                window.loginExec = loginExec;
+                        window.checkAuth = checkAuth;
+                                window._carregarDadosReais = _carregarDadosReais;
       });
-
-      window.loginExec = loginExec;
-      window.checkAuth = checkAuth;
-      window._carregarDadosReais = _carregarDadosReais;
     })();
   </script>
 
