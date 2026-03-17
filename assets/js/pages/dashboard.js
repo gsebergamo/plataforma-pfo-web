@@ -67,71 +67,41 @@ function calcMonthlyAgg(pfos) {
 /**
  * Calcula KPIs consolidados 2026 (soma total do ano).
  */
-function calcKPIs2026(pfos) {
-  // Usa dist filtrado por ano=2026 para excluir anos anteriores/posteriores ao ciclo
-  // Valores em dist estão em R$k (mesma escala de dre.projetado) — converte para R$ ao final
-  let contrato = 0, receita = 0, impostos = 0, custo = 0, cliente = 0;
-  pfos.forEach(pfo => {
-    const dist = pfo.dist || {};
-    (['contrato','receita','impostos','custo','cliente']).forEach(campo => {
-      (dist[campo] || []).forEach(entry => {
-        if (entry.ano === CURRENT_YEAR) {
-          if (campo === 'contrato') contrato += safeNumber(entry.valor);
-          if (campo === 'receita')  receita  += safeNumber(entry.valor);
-          if (campo === 'impostos') impostos += safeNumber(entry.valor);
-          if (campo === 'custo')    custo    += safeNumber(entry.valor);
-          if (campo === 'cliente')  cliente  += safeNumber(entry.valor);
-        }
-      });
-    });
+function calcKPIs2026(pfos){
+  // Soma dist filtrado por ano=2026 (R$k) -> converte para R$
+  let ct=0,rc=0,imp=0,cs=0,cl=0;
+  pfos.forEach(pfo=>{
+    const dist=pfo.dist||{};
+    const s=(c)=>(dist[c]||[]).filter(e=>e.ano===CURRENT_YEAR).reduce((a,e)=>a+safeNumber(e.valor),0);
+    ct+=s('contrato');rc+=s('receita');imp+=s('impostos');cs+=s('custo');cl+=s('cliente');
   });
-  // Converter R$k -> R$ (todos os campos estão em R$k no dist)
-  const toR = v => v * 1000;
-  contrato = toR(contrato); receita = toR(receita); impostos = toR(impostos);
-  custo = toR(custo); cliente = toR(cliente);
-  const despesa = custo + cliente;
-  const resultado = receita - despesa;
-  const margem = contrato > 0 ? resultado / contrato : 0;
-  return { contrato, receita, impostos, custo, cliente, despesa, resultado, margem };
+  ct*=1000;rc*=1000;imp*=1000;cs*=1000;cl*=1000;
+  const despesa=cs+cl,resultado=rc-despesa,margem=ct>0?resultado/ct:0;
+  return{contrato:ct,receita:rc,impostos:imp,custo:cs,cliente:cl,despesa,resultado,margem};
 }
 
 /**
  * Calcula indicador Backoffice / Receita.
  * Usa classificação real do CC (eh_backoffice), nunca heurística por nome.
  */
-function calcBackoffice(pfos, centros_custo) {
-  // CCs backoffice via campo eh_backoffice (nunca por nome)
-  const boCCKeys = new Set(
-    Object.entries(centros_custo || {})
-      .filter(([, cc]) => cc.eh_backoffice)
-      .map(([k]) => k)
-  );
-  // Mapear arquivo PFO -> CC backoffice
-  const boArquivos = new Set();
-  Object.entries(centros_custo || {}).forEach(([key, cc]) => {
-    if (!cc.eh_backoffice) return;
-    const pfoNome = cc.arquivos?.pfo?.nome;
-    if (pfoNome) boArquivos.add(pfoNome);
+function calcBackoffice(pfos,centros_custo){
+  const boCCKeys=new Set(Object.entries(centros_custo||{}).filter(([,cc])=>cc.eh_backoffice).map(([k])=>k));
+  const boArquivos=new Set();
+  Object.entries(centros_custo||{}).forEach(([key,cc])=>{
+    if(!cc.eh_backoffice)return;
+    const n=cc.arquivos?.pfo?.nome;
+    if(n)boArquivos.add(n);
   });
-
-  // Usar dist filtrado por ano=2026 (valores em R$k -> R$ após *1000)
-  let custoBackoffice = 0, receitaTotal = 0;
-  pfos.forEach(pfo => {
-    const dist = pfo.dist || {};
-    const sum2026 = (campo) => (dist[campo] || [])
-      .filter(e => e.ano === CURRENT_YEAR)
-      .reduce((s, e) => s + safeNumber(e.valor), 0) * 1000;
-
-    receitaTotal += sum2026('receita');
-
-    const isBO = boArquivos.has(pfo.arquivo) ||
-      (pfo.projeto && pfo.projeto.startsWith('GSE') && boCCKeys.size > 0);
-
-    if (isBO) custoBackoffice += sum2026('custo');
+  let custoBO=0,recTotal=0;
+  pfos.forEach(pfo=>{
+    const dist=pfo.dist||{};
+    const s26=(c)=>(dist[c]||[]).filter(e=>e.ano===CURRENT_YEAR).reduce((a,e)=>a+safeNumber(e.valor),0)*1000;
+    recTotal+=s26('receita');
+    const isBO=boArquivos.has(pfo.arquivo)||(pfo.projeto&&pfo.projeto.startsWith('GSE')&&boCCKeys.size>0);
+    if(isBO)custoBO+=s26('custo');
   });
-
-  const ratio = receitaTotal > 0 ? custoBackoffice / receitaTotal : 0;
-  return { custoBackoffice, receitaTotal, ratio, backoffice_count: boCCKeys.size };
+  const ratio=recTotal>0?custoBO/recTotal:0;
+  return{custoBackoffice:custoBO,receitaTotal:recTotal,ratio,backoffice_count:boCCKeys.size};
 }
 
 /**
@@ -172,24 +142,13 @@ function getMetrics(data) {
 
   // Projetos ordenados por margem (piores primeiro)
   const projetos = pfos.map(pfo => {
-    // Usar dist filtrado por ano=2026 (valores em R$k) -> converter para R$
     const dist = pfo.dist || {};
-    const sum2026 = (campo) => (dist[campo] || [])
-      .filter(e => e.ano === CURRENT_YEAR)
-      .reduce((s, e) => s + safeNumber(e.valor), 0) * 1000; // R$k -> R$
-
-    const rc = sum2026('receita');
-    const ct = sum2026('contrato');
-    const cs = sum2026('custo');
-    const cl = sum2026('cliente');
-    const imp = sum2026('impostos');
-    const dp = cs + cl;
-    const res = rc - dp;
-    const mg = ct > 0 ? res / ct : 0;
-    const nome = (pfo.arquivo || pfo.projeto || '—')
-      .replace('PFO_', '').replace(/\.xlsm?$/, '').split('_2026')[0];
-    return { ...pfo, _rc: rc, _ct: ct, _cs: cs, _cl: cl, _imp: imp, _dp: dp, _res: res, _mg: mg, _nome: nome, _status: getStatus(pfo, apr) };
-  }).sort((a, b) => a._mg - b._mg);
+    const s26 = (c) => (dist[c]||[]).filter(e=>e.ano===CURRENT_YEAR).reduce((a,e)=>a+safeNumber(e.valor),0)*1000;
+    const rc=s26('receita'), ct=s26('contrato'), cs=s26('custo'), cl=s26('cliente'), imp=s26('impostos');
+    const dp=cs+cl, res=rc-dp, mg=ct>0?res/ct:0;
+    const nome=(pfo.arquivo||pfo.projeto||'—').replace('PFO_','').replace(/\.xlsm?$/,'').split('_2026')[0];
+    return {...pfo,_rc:rc,_ct:ct,_cs:cs,_cl:cl,_imp:imp,_dp:dp,_res:res,_mg:mg,_nome:nome,_status:getStatus(pfo,apr)};
+  }).sort((a,b)=>a._mg-b._mg);
 
   // Alertas
   const alertas = buildAlerts(projetos, a, e, p, r, kpis.margem);
