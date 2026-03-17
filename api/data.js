@@ -7,15 +7,20 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  // Cache header — data can be cached for 2 minutes by CDN
+  // Cache header
   res.setHeader('Cache-Control', 's-maxage=120, stale-while-revalidate=60');
 
   const ghToken = process.env.GITHUB_TOKEN;
   const repo = process.env.GITHUB_REPO || 'gsebergamo/plataforma-pfo';
 
   if (!ghToken) {
-    return res.status(500).json({ error: 'GITHUB_TOKEN not configured' });
+    console.error('[data] GITHUB_TOKEN environment variable is not set');
+    return res.status(500).json({
+      error: 'GITHUB_TOKEN não configurado. Configure a variável de ambiente no Vercel.',
+    });
   }
+
+  console.log('[data] Fetching data from repo:', repo);
 
   try {
     // Step 1: Get file SHA from contents endpoint
@@ -26,8 +31,13 @@ module.exports = async function handler(req, res) {
     );
 
     if (!metaData || !metaData.sha) {
-      throw new Error('Could not find plataforma.json in repository');
+      console.error('[data] No SHA found in metadata response:', JSON.stringify(metaData).substring(0, 200));
+      return res.status(500).json({
+        error: 'Arquivo dados/plataforma.json não encontrado no repositório ' + repo,
+      });
     }
+
+    console.log('[data] File SHA:', metaData.sha, '| Size:', metaData.size, 'bytes');
 
     // Step 2: Get raw blob content (supports files > 1MB)
     const rawData = await makeRequest(
@@ -37,10 +47,23 @@ module.exports = async function handler(req, res) {
       'application/vnd.github.raw+json'
     );
 
+    // Validate we got actual data
+    if (!rawData || typeof rawData !== 'object') {
+      console.error('[data] Invalid data received from blob endpoint');
+      return res.status(500).json({ error: 'Dados inválidos recebidos do GitHub' });
+    }
+
+    // Log summary of loaded data
+    const pfoCount = Array.isArray(rawData.pfos) ? rawData.pfos.length : 0;
+    const ccCount = rawData.centros_custo ? Object.keys(rawData.centros_custo).length : 0;
+    console.log(`[data] Success: ${pfoCount} PFOs, ${ccCount} centros de custo`);
+
     return res.status(200).json(rawData);
   } catch (e) {
     console.error('[data] Error:', e.message);
-    return res.status(500).json({ error: e.message || 'Failed to fetch data' });
+    return res.status(500).json({
+      error: 'Erro ao buscar dados: ' + e.message,
+    });
   }
 };
 
@@ -61,22 +84,30 @@ function makeRequest(host, path, token, accept) {
       let data = '';
       response.on('data', (chunk) => (data += chunk));
       response.on('end', () => {
+        if (response.statusCode === 401 || response.statusCode === 403) {
+          reject(new Error('Token GitHub inválido ou sem permissão. Verifique GITHUB_TOKEN no Vercel.'));
+          return;
+        }
+        if (response.statusCode === 404) {
+          reject(new Error('Repositório ou arquivo não encontrado: ' + path));
+          return;
+        }
+        if (response.statusCode >= 400) {
+          reject(new Error('GitHub API retornou status ' + response.statusCode + ': ' + data.substring(0, 200)));
+          return;
+        }
         try {
-          if (response.statusCode >= 400) {
-            reject(new Error('GitHub API error: ' + response.statusCode + ' - ' + data.substring(0, 200)));
-          } else {
-            resolve(JSON.parse(data));
-          }
+          resolve(JSON.parse(data));
         } catch (e) {
-          reject(new Error('Failed to parse GitHub response: ' + data.substring(0, 100)));
+          reject(new Error('Erro ao interpretar resposta do GitHub: ' + data.substring(0, 100)));
         }
       });
     });
 
-    req.on('error', reject);
+    req.on('error', (err) => reject(new Error('Erro de conexão com GitHub: ' + err.message)));
     req.setTimeout(15000, () => {
       req.destroy();
-      reject(new Error('GitHub API timeout'));
+      reject(new Error('Timeout ao acessar GitHub API'));
     });
     req.end();
   });

@@ -1,6 +1,11 @@
 /**
  * Aprovações Page
  * Plataforma PFO — GSE
+ *
+ * BACKWARD COMPATIBILITY:
+ *   - Uses pfos (with pfos_mensais fallback) like original code
+ *   - Same status detection logic
+ *   - Same approval stage detection
  */
 
 import { state } from '../state.js';
@@ -11,6 +16,7 @@ export function renderAprovacoes() {
   const data = state.data;
   if (!data) return;
 
+  // Use pfos as primary source (same data, full list)
   const pfos = data.pfos || [];
   const apr = data.aprovacoes || {};
   const tbody = document.getElementById('apr-tbody');
@@ -26,7 +32,10 @@ export function renderAprovacoes() {
 
   tbody.innerHTML = aguardando
     .map((p) => {
-      const key = (p.arquivo || '').replace(/\.xlsm$/, '').replace(/\.xlsx$/, '').replace(/\.xls$/, '');
+      const key = (p.arquivo || '')
+        .replace(/\.xlsm$/, '')
+        .replace(/\.xlsx$/, '')
+        .replace(/\.xls$/, '');
       const a = apr[key] || {};
       const dirs = a.aprovacoes_diretoria || {};
       const dirCount = Object.keys(dirs).length;
@@ -35,7 +44,7 @@ export function renderAprovacoes() {
         dirCount >= 1 ? 'Dir. Técnico' : 'Backoffice';
 
       return `<tr>
-        <td class="td-mono">${p.projeto || '—'}</td>
+        <td class="td-mono">${p.projeto || p.cc_codigo || '—'}</td>
         <td style="font-size:11px;color:var(--muted)">${key.substring(0, 25) || '—'}</td>
         <td class="td-muted">${etapa}</td>
         <td>${badge('aguardando')}</td>

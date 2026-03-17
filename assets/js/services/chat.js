@@ -7,12 +7,13 @@
  * BACKWARD COMPATIBILITY:
  *   - Same API contract with /api/chat
  *   - Same message format (role + content)
- *   - Enhanced with better context building
+ *   - Enhanced with better context building and error handling
  */
 
 import { request, ApiError } from './api.js';
 import { state } from '../state.js';
 import { safeNumber, formatNumber, getCurrentMonth, formatMonth } from '../utils/format.js';
+import { getStatus } from '../pages/shared.js';
 
 /**
  * Send a message to the AI agent and get a response.
@@ -21,18 +22,24 @@ import { safeNumber, formatNumber, getCurrentMonth, formatMonth } from '../utils
  * @returns {Promise<string>} The agent's response text
  */
 export async function sendChatMessage(userMessage) {
-  // Add user message to history
+  // Add user message to state history
   state.addChatMessage({ role: 'user', content: userMessage });
 
   try {
     const context = buildContext();
+
+    // Build clean message history for the API (exclude error messages)
+    const apiMessages = state.chatHistory.filter(
+      (m) => m.role === 'user' || (m.role === 'assistant' && !m._isError)
+    );
+
     const response = await request('/api/chat', {
       method: 'POST',
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1500,
         system: buildSystemPrompt(context),
-        messages: state.chatHistory,
+        messages: apiMessages,
       }),
     });
 
@@ -42,14 +49,17 @@ export async function sendChatMessage(userMessage) {
     state.addChatMessage({ role: 'assistant', content: replyText });
     return replyText;
   } catch (error) {
-    const errorMsg = 'Erro ao conectar ao agente. Tente novamente.';
-    state.addChatMessage({ role: 'assistant', content: errorMsg });
+    console.error('[Chat] Error:', error.message);
+    const errorMsg = 'Erro ao conectar ao agente. Verifique se a chave ANTHROPIC_API_KEY está configurada no Vercel.';
+    // Mark error messages so they don't get sent to API
+    state.addChatMessage({ role: 'assistant', content: errorMsg, _isError: true });
     throw new ApiError(errorMsg);
   }
 }
 
 /**
  * Build context string from current platform data.
+ * Provides rich context about the current state of the platform.
  * @returns {string}
  */
 function buildContext() {
@@ -73,28 +83,56 @@ function buildContext() {
     receitaTotal += safeNumber((pfo.dre?.receita?.projetado || 0) * 1000);
     custoTotal += safeNumber((pfo.dre?.custo?.projetado || 0) * 1000);
 
-    const key = (pfo.arquivo || '').replace(/\.xlsm$/, '').replace(/\.xlsx$/, '').replace(/\.xls$/, '');
-    const apr = aprovacoes[key] || {};
-    const st = apr.status || '';
+    const st = getStatus(pfo, aprovacoes);
     if (st === 'aprovado') aprovados++;
     else if (st === 'reprovado') reprovados++;
-    else if (st.includes('aguardando') || st.includes('validacao') || st.includes('aprovacao')) enviados++;
-    else if (pfo.arquivo) enviados++;
+    else if (st === 'enviado') enviados++;
     else pendentes++;
   });
 
   const margem = receitaTotal > 0 ? ((receitaTotal - custoTotal) / receitaTotal * 100) : 0;
+  const resultado = receitaTotal - custoTotal;
 
-  return [
+  // Build context lines
+  const lines = [
     `Ciclo: ${formatMonth(mes)}`,
-    `PFOs: ${pfos.length}`,
-    `Centros de custo: ${Object.keys(centros).length}`,
+    `Total de PFOs: ${pfos.length}`,
+    `Centros de custo ativos: ${Object.keys(centros).length}`,
     `Receita total projetada: R$ ${formatNumber(receitaTotal / 1000)}k`,
     `Custo total projetado: R$ ${formatNumber(custoTotal / 1000)}k`,
+    `Resultado projetado: R$ ${formatNumber(resultado / 1000)}k`,
     `Margem consolidada: ${margem.toFixed(1)}%`,
     `Status: ${aprovados} aprovados, ${enviados} enviados, ${pendentes} pendentes, ${reprovados} reprovados`,
-    reprovados > 0 ? `ALERTA: ${reprovados} PFO(s) reprovado(s) necessitam reenvio.` : '',
-  ].filter(Boolean).join('. ');
+  ];
+
+  // Add specific alerts
+  if (reprovados > 0) {
+    lines.push(`ALERTA CRÍTICO: ${reprovados} PFO(s) reprovado(s) necessitam reenvio urgente.`);
+  }
+  if (margem < 5 && pfos.length > 0) {
+    lines.push(`ALERTA: Margem de ${margem.toFixed(1)}% está abaixo da meta de 5%.`);
+  }
+  if (pendentes > 3) {
+    lines.push(`ALERTA: ${pendentes} centros ainda não enviaram PFO.`);
+  }
+
+  // Add top 5 projects by revenue for context
+  if (pfos.length > 0) {
+    const topPfos = [...pfos]
+      .sort((a, b) => safeNumber(b.dre?.receita?.projetado || 0) - safeNumber(a.dre?.receita?.projetado || 0))
+      .slice(0, 5);
+
+    lines.push('\nPrincipais projetos por receita:');
+    topPfos.forEach((pfo) => {
+      const rc = safeNumber((pfo.dre?.receita?.projetado || 0) * 1000);
+      const cs = safeNumber((pfo.dre?.custo?.projetado || 0) * 1000);
+      const mg = rc > 0 ? ((rc - cs) / rc * 100) : 0;
+      const st = getStatus(pfo, aprovacoes);
+      lines.push(`- ${pfo.projeto || pfo.arquivo || '—'}: receita R$ ${formatNumber(rc / 1000)}k, margem ${mg.toFixed(1)}%, status ${st}`);
+    });
+  }
+
+  return lines.join('\n');
 }
 
 /**
@@ -111,27 +149,29 @@ Suas capacidades:
 - Fornecer resumos executivos para diretoria
 - Comparar performance entre centros de custo
 - Alertar sobre desvios e anomalias financeiras
+- Recomendar ações corretivas
 
 Regras:
 - Responda sempre em português brasileiro
-- Seja executivo e direto, com dados concretos
+- Seja executivo e direto, com dados concretos quando disponíveis
 - Use formatação com **negrito** para destacar valores importantes
 - Quando não souber algo específico, sugira onde buscar a informação
 - Nunca invente dados — use apenas o contexto fornecido
+- Quando os dados estiverem vazios, informe que o ciclo pode não ter PFOs enviados ainda
 
 Contexto atual da plataforma:
 ${context}`;
 }
 
 /**
- * Get suggested quick prompts based on current data state.
+ * Get suggested quick prompts.
  * @returns {Array<{label: string, prompt: string}>}
  */
 export function getQuickPrompts() {
   return [
     { label: 'Status do ciclo', prompt: 'Como está o status do ciclo atual?' },
     { label: 'Pendências', prompt: 'Quais são as pendências críticas?' },
-    { label: 'Margem', prompt: 'Como está a margem consolidada?' },
-    { label: 'Resumo executivo', prompt: 'Faça um resumo executivo.' },
+    { label: 'Margem', prompt: 'Como está a margem consolidada e quais projetos estão em risco?' },
+    { label: 'Resumo executivo', prompt: 'Faça um resumo executivo completo do ciclo atual.' },
   ];
 }

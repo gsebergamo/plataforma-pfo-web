@@ -130,6 +130,17 @@ a:hover {
 .sidebar-logo {
   padding: 24px 20px 20px;
   border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.logo-mark {
+  margin-bottom: 8px;
+}
+
+.logo-mark svg {
+  filter: drop-shadow(0 2px 4px rgba(79, 142, 247, 0.3));
 }
 
 .company {
