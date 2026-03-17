@@ -1521,3 +1521,38 @@ tbody tr:last-child td {
   .kpi2-value { font-size: 16px; }
   .kpi2-big { font-size: 20px; }
 }
+
+
+/* ── KPI Grid 2026 — subdivisão de despesa ─────────────────────────────────── */
+.kpi2-card-despesa {
+  grid-column: span 2;
+}
+.kpi2-sub-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--muted);
+  align-items: center;
+}
+.kpi2-sub-item strong {
+  color: #e5e7eb;
+  font-weight: 600;
+}
+.kpi2-sub-sep {
+  color: #374151;
+}
+.kpi2-nao-op strong {
+  color: #fbbf24;   /* âmbar — despesa não operacional */
+}
+.kpi2-nao-op::before {
+  content: '⚠ ';
+  color: #fbbf24;
+}
+.kpi2-obra strong {
+  color: #a78bfa;   /* violeta — obra/investimento */
+}
+.kpi2-obra::before {
+  content: '🏗 ';
+}
