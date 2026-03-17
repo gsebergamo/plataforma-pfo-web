@@ -240,7 +240,141 @@
       </div>
     </div>
 
+    
     <!-- ============================================================
+         DASHBOARD EXECUTIVO 2026 — SEÇÕES ADICIONAIS
+         ============================================================ -->
+
+    <!-- HOME PAGE — Cards de navegação rápida -->
+    <div id="home-nav-cards" style="margin-bottom:20px">
+      <div style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px">Acesso Rápido</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px">
+        <div class="home-nav-card" data-page="dashboard" style="cursor:pointer;background:linear-gradient(135deg,rgba(79,142,247,.12),rgba(124,94,247,.12));border:1px solid rgba(79,142,247,.25);border-radius:10px;padding:14px;transition:all .2s;user-select:none" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(79,142,247,.2)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+          <div style="font-size:20px;margin-bottom:6px">📊</div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">Dashboard</div>
+          <div style="font-size:10px;color:var(--muted)">Visão executiva</div>
+        </div>
+        <div class="home-nav-card" data-page="ciclos" style="cursor:pointer;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:14px;transition:all .2s;user-select:none" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(16,185,129,.15)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+          <div style="font-size:20px;margin-bottom:6px">◷</div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">Status PFOs</div>
+          <div style="font-size:10px;color:var(--muted)">Ciclos &amp; governança</div>
+        </div>
+        <div class="home-nav-card" data-page="upload" style="cursor:pointer;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:14px;transition:all .2s;user-select:none" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(245,158,11,.15)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+          <div style="font-size:20px;margin-bottom:6px">↑</div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">Upload PFO</div>
+          <div style="font-size:10px;color:var(--muted)">Enviar arquivo</div>
+        </div>
+        <div class="home-nav-card" data-page="aprovacoes" style="cursor:pointer;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:10px;padding:14px;transition:all .2s;user-select:none" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(248,113,113,.15)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+          <div style="font-size:20px;margin-bottom:6px">✓</div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">Aprovações</div>
+          <div style="font-size:10px;color:var(--muted)">Fila de aprovação</div>
+        </div>
+        <div class="home-nav-card" data-page="centros" style="cursor:pointer;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);border-radius:10px;padding:14px;transition:all .2s;user-select:none" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(139,92,246,.15)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+          <div style="font-size:20px;margin-bottom:6px">⊞</div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">Centros</div>
+          <div style="font-size:10px;color:var(--muted)">Centros de custo</div>
+        </div>
+        <div class="home-nav-card" data-page="relatorios" style="cursor:pointer;background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.2);border-radius:10px;padding:14px;transition:all .2s;user-select:none" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(251,146,60,.15)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+          <div style="font-size:20px;margin-bottom:6px">▤</div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">Relatórios</div>
+          <div style="font-size:10px;color:var(--muted)">Exportar dados</div>
+        </div>
+        <div class="home-nav-card" data-page="agente" style="cursor:pointer;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:10px;padding:14px;transition:all .2s;user-select:none" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(99,102,241,.15)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+          <div style="font-size:20px;margin-bottom:6px">◉</div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">Agente IA</div>
+          <div style="font-size:10px;color:var(--muted)">Análise inteligente</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Grid 2026 -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="section-header" style="margin-bottom:14px">
+        <div class="section-title">Visão Consolidada 2026</div>
+        <span class="badge info" style="font-size:10px">Competência: Jan–Dez/2026</span>
+      </div>
+      <div id="kpi-grid-2026" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px">
+        <div class="skeleton" style="height:80px;border-radius:8px"></div>
+        <div class="skeleton" style="height:80px;border-radius:8px"></div>
+        <div class="skeleton" style="height:80px;border-radius:8px"></div>
+        <div class="skeleton" style="height:80px;border-radius:8px"></div>
+        <div class="skeleton" style="height:80px;border-radius:8px"></div>
+        <div class="skeleton" style="height:80px;border-radius:8px"></div>
+        <div class="skeleton" style="height:80px;border-radius:8px"></div>
+      </div>
+    </div>
+
+    <!-- Curvas acumuladas -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="section-header" style="margin-bottom:14px">
+        <div class="section-title">Evolução Acumulada 2026</div>
+        <span style="font-size:11px;color:var(--muted)">Realizado → Planejado</span>
+      </div>
+      <div id="chart-curvas" style="width:100%;min-height:240px">
+        <div class="loading-overlay" style="height:200px;display:flex;align-items:center;justify-content:center">
+          <div class="spinner"></div> Carregando curvas...
+        </div>
+      </div>
+    </div>
+
+    <!-- Ranking de projetos -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="section-header">
+        <div class="section-title">Ranking de Projetos — Receita 2026</div>
+        <span style="font-size:11px;color:var(--muted)">Top 10 por receita projetada</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Projeto</th>
+              <th>Contrato</th>
+              <th>Receita</th>
+              <th>Resultado</th>
+              <th>Margem</th>
+            </tr>
+          </thead>
+          <tbody id="ranking-tbody">
+            <tr><td colspan="6" class="td-muted" style="text-align:center;padding:20px">
+              <div class="loading-overlay"><div class="spinner"></div> Carregando...</div>
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tabela detalhada completa -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="section-header">
+        <div class="section-title">DRE Detalhada — Todos os Projetos 2026</div>
+        <span style="font-size:11px;color:var(--muted)">DESPESA = Custo + Cliente · MARGEM = Resultado / Contrato</span>
+      </div>
+      <div class="table-wrap" style="overflow-x:auto">
+        <table style="min-width:800px">
+          <thead>
+            <tr>
+              <th>Projeto</th>
+              <th>Contrato</th>
+              <th>Receita</th>
+              <th>Impostos</th>
+              <th>Custo</th>
+              <th>Cliente</th>
+              <th>Despesa</th>
+              <th>Resultado</th>
+              <th>Margem</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-tbody">
+            <tr><td colspan="10" class="td-muted" style="text-align:center;padding:20px">
+              <div class="loading-overlay"><div class="spinner"></div> Carregando...</div>
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+<!-- ============================================================
          PAGE: Ciclos & Governança
          ============================================================ -->
     <div class="page fade-in" id="page-ciclos">
