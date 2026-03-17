@@ -574,6 +574,8 @@
         if (token) {
           document.getElementById('login-screen').style.display = 'none';
           _carregarDadosReais(token);
+        } else {
+          document.getElementById('login-screen').style.display = 'flex';
         }
       }
 
@@ -714,50 +716,52 @@
         checkAuth();
 
         var form = document.getElementById('login-form');
-        if (form) {
-          form.addEventListener('submit', async function (evt) {
-            evt.preventDefault();
-            var btn = document.getElementById('login-btn');
-            var errEl = document.getElementById('login-error');
-            var user = document.getElementById('login-user').value.trim();
-            var pass = document.getElementById('login-pass').value;
+        async function loginExec(evt) {
+          evt.preventDefault();
+          var btn = document.getElementById('login-btn');
+          var errEl = document.getElementById('login-error');
+          var user = document.getElementById('login-user').value.trim();
+          var pass = document.getElementById('login-pass').value;
 
-            btn.disabled = true;
-            btn.textContent = 'Entrando...';
-            if (errEl) errEl.style.display = 'none';
+          btn.disabled = true;
+          btn.textContent = 'Entrando...';
+          if (errEl) errEl.style.display = 'none';
 
-            try {
-              var res = await fetch('/api/auth', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ usuario: user, senha: pass })
-              });
+          try {
+            var res = await fetch('/api/auth', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ usuario: user, senha: pass })
+            });
 
-              var body = await res.json();
+            var data = await res.json();
 
-              if (!res.ok || !body.token) {
-                throw new Error(body.error || 'Credenciais inválidas');
-              }
-
-              // Salvar token no localStorage com chave 'pfo_token'
-              localStorage.setItem('pfo_token', body.token);
-
-              // Esconder login screen (NÃO remover do DOM)
-              document.getElementById('login-screen').style.display = 'none';
-
-              // Carregar dados reais com o token
-              _carregarDadosReais(body.token);
-
-            } catch (err) {
-              if (errEl) {
-                errEl.textContent = err.message;
-                errEl.style.display = 'block';
-              }
-            } finally {
-              btn.disabled = false;
-              btn.textContent = 'Entrar';
+            if (!res.ok || !data.token) {
+              throw new Error(data.error || 'Credenciais inválidas');
             }
-          });
+
+            // Salvar token no localStorage com chave 'pfo_token'
+            localStorage.setItem('pfo_token', data.token);
+
+            // Esconder login screen (NÃO remover do DOM)
+            document.getElementById('login-screen').style.display = 'none';
+
+            // Carregar dados reais com o token
+            _carregarDadosReais(data.token);
+
+          } catch (err) {
+            if (errEl) {
+              errEl.textContent = err.message;
+              errEl.style.display = 'block';
+            }
+          } finally {
+            btn.disabled = false;
+            btn.textContent = 'Entrar';
+          }
+        }
+
+        if (form) {
+          form.addEventListener('submit', loginExec);
         }
       });
     })();
