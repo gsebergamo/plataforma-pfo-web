@@ -1556,3 +1556,11 @@ tbody tr:last-child td {
 .kpi2-obra::before {
   content: '🏗 ';
 }
+
+.kpi2-backoffice strong {
+  color: #34d399;   /* verde — custo backoffice interno */
+}
+.kpi2-backoffice::before {
+  content: '⚙ ';
+  color: #34d399;
+}
