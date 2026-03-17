@@ -1,0 +1,17 @@
+{
+  "name": "plataforma-pfo-web",
+  "version": "5.0.0",
+  "description": "Plataforma PFO - Dashboard Financeiro Executivo - Global Service Engenharia",
+  "private": true,
+  "scripts": {
+    "dev": "npx serve . -l 3000",
+    "test": "node tests/utils.test.js",
+    "lint": "npx eslint assets/js/ --ext .js",
+    "format": "npx prettier --write 'assets/**/*.{js,css}' 'index.html'"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["pfo", "dashboard", "financeiro", "gse"],
+  "author": "GSE - Global Service Engenharia"
+}

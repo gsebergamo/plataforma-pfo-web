@@ -1,9 +1,535 @@
-<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Plataforma PFO — GSE</title><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@600&display=swap" rel="stylesheet"><style>:root{--bg:#0a0c10;--bg2:#111318;--bg3:#181c24;--border:#1e2330;--border2:#252d3d;--text:#e8eaf0;--muted:#6b7491;--dim:#3d4460;--accent:#4f8ef7;--accent2:#7c5ef7;--green:#34d399;--amber:#fbbf24;--red:#f87171;--teal:#2dd4bf;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;--display:'Playfair Display',serif}*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;display:flex;overflow-x:hidden}.sidebar{width:220px;min-height:100vh;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100}.sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid var(--border)}.company{font-family:var(--display);font-size:15px;color:var(--text);line-height:1.2}.sub{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-top:3px;font-family:var(--mono)}.badge-v{display:inline-block;background:linear-gradient(135deg,#1a2240,#1e2a50);border:1px solid var(--border2);color:var(--accent);font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:3px;margin-top:8px}nav{padding:16px 0;flex:1}.nav-sec{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);font-family:var(--mono);padding:12px 20px 6px}.nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;color:var(--muted);cursor:pointer;transition:all .15s;font-size:13px;border-left:2px solid transparent}.nav-item:hover{color:var(--text);background:rgba(255,255,255,.03)}.nav-item.active{color:var(--text);background:rgba(79,142,247,.07);border-left-color:var(--accent)}.nav-badge{margin-left:auto;background:var(--red);color:white;font-size:9px;font-family:var(--mono);border-radius:8px;padding:1px 5px;min-width:16px;text-align:center}.sidebar-footer{padding:16px 20px;border-top:1px solid var(--border)}.user-info{display:flex;align-items:center;gap:10px}.avatar{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:white;flex-shrink:0}.user-name{font-size:12px;font-weight:500;color:var(--text)}.user-role{font-size:10px;color:var(--muted);font-family:var(--mono)}.main{margin-left:220px;flex:1;min-height:100vh;display:flex;flex-direction:column}.topbar{height:56px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:16px;position:sticky;top:0;z-index:50}.topbar-title{font-size:15px;font-weight:500}.topbar-cycle{font-size:11px;font-family:var(--mono);color:var(--muted);background:var(--bg3);border:1px solid var(--border);padding:3px 10px;border-radius:4px}.topbar-right{margin-left:auto;display:flex;align-items:center;gap:12px}.status-pill{display:flex;align-items:center;gap:6px;font-size:11px;font-family:var(--mono);padding:4px 10px;border-radius:4px}.status-pill.ok{background:rgba(52,211,153,.1);color:var(--green);border:1px solid rgba(52,211,153,.2)}.status-pill.warn{background:rgba(251,191,36,.1);color:var(--amber);border:1px solid rgba(251,191,36,.2)}.status-pill.crit{background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.2)}.dot{width:6px;height:6px;border-radius:50%;background:currentColor}.pulse{animation:pulse 2s infinite}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}.page{padding:28px;display:none}.page.active{display:block}.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}.kpi-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px 20px;position:relative;overflow:hidden;transition:border-color .2s,transform .2s}.kpi-card:hover{border-color:var(--border2);transform:translateY(-1px)}.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}.kpi-card.blue::before{background:linear-gradient(90deg,var(--accent),transparent)}.kpi-card.green::before{background:linear-gradient(90deg,var(--green),transparent)}.kpi-card.amber::before{background:linear-gradient(90deg,var(--amber),transparent)}.kpi-card.red::before{background:linear-gradient(90deg,var(--red),transparent)}.kpi-label{font-size:10px;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}.kpi-value{font-size:28px;font-weight:300;line-height:1;letter-spacing:-.02em}.kpi-value .unit{font-size:13px;color:var(--muted);margin-left:2px;font-weight:400}.kpi-sub{font-size:11px;color:var(--muted);margin-top:8px}.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.section-title{font-size:13px;font-weight:500;color:var(--text)}.section-action{font-size:11px;color:var(--accent);cursor:pointer;font-family:var(--mono);text-decoration:none;opacity:.8}.section-action:hover{opacity:1}.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}.grid-3{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:24px}.card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse}thead tr{border-bottom:1px solid var(--border)}th{text-align:left;padding:8px 12px;font-size:10px;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:400}td{padding:10px 12px;font-size:12px;border-bottom:1px solid rgba(30,35,48,.8)}tbody tr:hover{background:rgba(255,255,255,.02)}tbody tr:last-child td{border-bottom:none}.td-mono{font-family:var(--mono);font-size:11px}.td-muted{color:var(--muted)}.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-family:var(--mono);padding:3px 8px;border-radius:4px;white-space:nowrap}.badge.aprovado{background:rgba(52,211,153,.1);color:var(--green);border:1px solid rgba(52,211,153,.15)}.badge.pendente{background:rgba(251,191,36,.1);color:var(--amber);border:1px solid rgba(251,191,36,.15)}.badge.reprovado{background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.15)}.badge.enviado{background:rgba(79,142,247,.1);color:var(--accent);border:1px solid rgba(79,142,247,.15)}.badge.info{background:rgba(45,212,191,.1);color:var(--teal);border:1px solid rgba(45,212,191,.15)}.progress-row{margin-bottom:14px}.progress-label{display:flex;justify-content:space-between;margin-bottom:5px;font-size:11px}.progress-track{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}.progress-fill{height:100%;border-radius:3px;transition:width 1s}.score-ring{display:flex;align-items:center;justify-content:center;flex-direction:column;padding:20px 0}.score-circle{position:relative;width:100px;height:100px}.score-svg{transform:rotate(-90deg)}.score-bg{fill:none;stroke:var(--bg3);stroke-width:8}.score-fg{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1.5s}.score-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}.score-num{font-size:24px;font-weight:300}.score-label{font-size:9px;font-family:var(--mono);color:var(--muted)}.score-status{margin-top:10px;font-size:12px;font-weight:500}.chart-bars{display:flex;align-items:flex-end;gap:6px;height:80px;padding-top:8px}.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}.bar-fill{width:100%;border-radius:3px 3px 0 0;min-height:4px}.bar-label{font-size:9px;font-family:var(--mono);color:var(--muted)}.upload-zone{border:2px dashed var(--border2);border-radius:10px;padding:36px 20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg3)}.upload-zone:hover,.upload-zone.drag-over{border-color:var(--accent);background:rgba(79,142,247,.05)}.upload-icon{font-size:28px;margin-bottom:10px;opacity:.5}.upload-title{font-size:13px;font-weight:500;margin-bottom:4px}.upload-sub{font-size:11px;color:var(--muted)}.chat-container{display:flex;flex-direction:column;height:calc(100vh - 200px);min-height:400px}.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}.chat-msg{display:flex;gap:10px;max-width:85%}.chat-msg.user{align-self:flex-end;flex-direction:row-reverse}.msg-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}.user .msg-avatar{background:linear-gradient(135deg,var(--accent),var(--accent2));color:white}.agent .msg-avatar{background:var(--bg3);color:var(--teal);border:1px solid var(--border2)}.msg-bubble{padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.6}.user .msg-bubble{background:rgba(79,142,247,.15);border:1px solid rgba(79,142,247,.2)}.agent .msg-bubble{background:var(--bg3);border:1px solid var(--border)}.chat-input-row{padding:14px 16px;border-top:1px solid var(--border);display:flex;gap:10px}.chat-input{flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--text);font-family:var(--font);font-size:13px;resize:none;outline:none;transition:border-color .2s}.chat-input:focus{border-color:var(--accent)}.chat-input::placeholder{color:var(--muted)}.btn{background:var(--accent);color:white;border:none;border-radius:8px;padding:10px 18px;font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;transition:opacity .2s;white-space:nowrap}.btn:hover{opacity:.85}.btn:disabled{opacity:.4;cursor:not-allowed}.btn.secondary{background:var(--bg3);color:var(--text);border:1px solid var(--border2)}.btn.secondary:hover{background:var(--bg2)}.btn-sm{padding:6px 12px;font-size:11px}.workflow-steps{display:flex;align-items:center;margin-bottom:20px}.wf-step{display:flex;align-items:center;gap:8px;flex:1}.wf-step:not(:last-child)::after{content:'';flex:1;height:1px;background:var(--border2);margin:0 4px}.wf-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;border:2px solid var(--border2);color:var(--muted)}.wf-step.done .wf-dot{background:var(--green);border-color:var(--green);color:var(--bg)}.wf-step.active .wf-dot{border-color:var(--accent);color:var(--accent)}.wf-label{font-size:10px;color:var(--muted)}.wf-step.done .wf-label{color:var(--green)}.wf-step.active .wf-label{color:var(--accent)}.typing{display:flex;align-items:center;gap:4px;padding:4px 0}.typing span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce .9s infinite}.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}.skeleton{background:linear-gradient(90deg,var(--bg3) 25%,var(--bg2) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:4px}@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}.fade-in{animation:fadeIn .4s ease}@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}.divider{height:1px;background:var(--border);margin:20px 0}.alert{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:8px;margin-bottom:10px;font-size:12px;line-height:1.5}.alert.warn{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);color:#e5b94a}.alert.danger{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);color:#f8a1a1}.alert.info{background:rgba(79,142,247,.08);border:1px solid rgba(79,142,247,.2);color:#92b8f7}.alert-icon{font-size:14px;flex-shrink:0;margin-top:1px}.stats-row{display:flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:24px}.stat-item{flex:1;padding:16px;border-right:1px solid var(--border);text-align:center}.stat-item:last-child{border-right:none}.stat-num{font-size:22px;font-weight:300}.stat-lbl{font-size:10px;font-family:var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:3px}@media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:900px){.sidebar{transform:translateX(-100%)}.main{margin-left:0}.grid-2,.grid-3{grid-template-columns:1fr}.kpi-grid{grid-template-columns:1fr 1fr}}</style></head><body><aside class="sidebar"><div class="sidebar-logo"><div class="company">Global Service<br>Engenharia</div><div class="sub">Plataforma PFO</div><div class="badge-v">v4.0</div></div><nav><div class="nav-sec">Principal</div><div class="nav-item active" onclick="showPage('dashboard')"><span style="width:16px;opacity:.6;text-align:center">◈</span> Dashboard</div><div class="nav-item" onclick="showPage('ciclos')"><span style="width:16px;opacity:.6;text-align:center">◷</span> Ciclos &amp; Status <span class="nav-badge" id="badge-p">0</span></div><div class="nav-sec">Operacional</div><div class="nav-item" onclick="showPage('upload')"><span style="width:16px;opacity:.6;text-align:center">↑</span> Upload PFO</div><div class="nav-item" onclick="showPage('aprovacoes')"><span style="width:16px;opacity:.6;text-align:center">✓</span> Aprovações</div><div class="nav-item" onclick="showPage('centros')"><span style="width:16px;opacity:.6;text-align:center">⊞</span> Centros de Custo</div><div class="nav-sec">Inteligência</div><div class="nav-item" onclick="showPage('agente')"><span style="width:16px;opacity:.6;text-align:center">◉</span> Agente IA</div><div class="nav-item" onclick="showPage('relatorios')"><span style="width:16px;opacity:.6;text-align:center">▤</span> Relatórios</div></nav><div class="sidebar-footer"><div class="user-info"><div class="avatar">PB</div><div><div class="user-name">Paulo Bergamo</div><div class="user-role">DIRETOR</div></div></div></div></aside><main class="main"><header class="topbar"><span class="topbar-title" id="page-title">Dashboard Executivo</span><span class="topbar-cycle" id="cycle-label">Ciclo: —</span><div class="topbar-right"><div class="status-pill warn" id="status-pill"><div class="dot pulse"></div><span id="status-text">Carregando...</span></div><a href="https://plataforma-pfo-ghjcxccztnvn2yatcnsfr4.streamlit.app" target="_blank" class="btn secondary btn-sm">↗ App completo</a></div></header><div class="page active fade-in" id="page-dashboard"><div class="kpi-grid"><div class="kpi-card blue"><div class="kpi-label">Receita Projetada</div><div class="kpi-value"><span id="kpi-rec">—</span><span class="unit">mil</span></div><div class="kpi-sub" id="kpi-rec-sub">carregando...</div></div><div class="kpi-card green"><div class="kpi-label">Margem Consolidada</div><div class="kpi-value"><span id="kpi-mar">—</span><span class="unit">%</span></div><div class="kpi-sub">vs orçado</div></div><div class="kpi-card amber"><div class="kpi-label">PFOs no Ciclo</div><div class="kpi-value"><span id="kpi-pfo">—</span></div><div class="kpi-sub" id="kpi-pfo-sub">— centros ativos</div></div><div class="kpi-card red"><div class="kpi-label">Pendências</div><div class="kpi-value"><span id="kpi-pen">—</span></div><div class="kpi-sub">aguardando ação</div></div></div><div class="grid-3"><div class="card"><div class="section-header"><div class="section-title">Status do Ciclo</div><span class="section-action" onclick="showPage('ciclos')">ver detalhe →</span></div><div style="display:flex;gap:24px;align-items:center"><div class="score-ring"><div class="score-circle"><svg class="score-svg" width="100" height="100"><circle class="score-bg" cx="50" cy="50" r="40"/><circle class="score-fg" id="score-c" cx="50" cy="50" r="40" stroke-dasharray="251.3" stroke-dashoffset="251.3" stroke="var(--green)"/></svg><div class="score-text"><div class="score-num" id="score-n">—</div><div class="score-label">SCORE</div></div></div><div class="score-status" id="score-s">—</div></div><div style="flex:1"><div class="progress-row"><div class="progress-label"><span style="font-size:11px;color:var(--muted)">Aprovados</span><span class="td-mono" id="pr-apr">—</span></div><div class="progress-track"><div class="progress-fill" id="pf-apr" style="background:var(--green);width:0%"></div></div></div><div class="progress-row"><div class="progress-label"><span style="font-size:11px;color:var(--muted)">Enviados</span><span class="td-mono" id="pr-env">—</span></div><div class="progress-track"><div class="progress-fill" id="pf-env" style="background:var(--accent);width:0%"></div></div></div><div class="progress-row"><div class="progress-label"><span style="font-size:11px;color:var(--muted)">Pendentes</span><span class="td-mono" id="pr-pen">—</span></div><div class="progress-track"><div class="progress-fill" id="pf-pen" style="background:var(--amber);width:0%"></div></div></div><div class="progress-row"><div class="progress-label"><span style="font-size:11px;color:var(--muted)">Reprovados</span><span class="td-mono" id="pr-rep">—</span></div><div class="progress-track"><div class="progress-fill" id="pf-rep" style="background:var(--red);width:0%"></div></div></div></div></div></div><div class="card"><div class="section-header"><div class="section-title">Alertas Ativos</div></div><div id="alertas-list"><div class="skeleton" style="height:42px;margin-bottom:8px"></div><div class="skeleton" style="height:42px;margin-bottom:8px"></div><div class="skeleton" style="height:42px"></div></div></div></div><div class="grid-2"><div class="card"><div class="section-header"><div class="section-title">Projetos em Atenção</div><span class="section-action" onclick="showPage('centros')">todos →</span></div><div class="table-wrap"><table><thead><tr><th>Projeto</th><th>Receita</th><th>Margem</th><th>Status</th></tr></thead><tbody id="proj-tbody"><tr><td colspan="4" class="td-muted" style="text-align:center;padding:20px">Carregando...</td></tr></tbody></table></div></div><div class="card"><div class="section-header"><div class="section-title">Distribuição de Status</div></div><div class="chart-bars" id="chart-bars"><div style="width:100%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px">Carregando...</div></div><div class="stats-row" style="border:none;margin:20px 0 0"><div class="stat-item"><div class="stat-num" id="st-apr" style="color:var(--green)">—</div><div class="stat-lbl">Aprovados</div></div><div class="stat-item"><div class="stat-num" id="st-env" style="color:var(--accent)">—</div><div class="stat-lbl">Enviados</div></div><div class="stat-item"><div class="stat-num" id="st-pen" style="color:var(--amber)">—</div><div class="stat-lbl">Pendentes</div></div><div class="stat-item"><div class="stat-num" id="st-rep" style="color:var(--red)">—</div><div class="stat-lbl">Reprovados</div></div></div></div></div></div><div class="page fade-in" id="page-ciclos"><div class="section-header"><div class="section-title" style="font-size:16px">Ciclos &amp; Governança</div></div><div class="alert info"><span class="alert-icon">ℹ</span><span id="ciclo-info">Ciclo atual em andamento.</span></div><div class="card" style="margin-bottom:14px"><div class="section-title" style="margin-bottom:16px">Fluxo de Aprovação</div><div class="workflow-steps"><div class="wf-step done"><div class="wf-dot">✓</div><div class="wf-label">Envio PFO</div></div><div class="wf-step active"><div class="wf-dot">2</div><div class="wf-label">Validação Backoffice</div></div><div class="wf-step"><div class="wf-dot">3</div><div class="wf-label">Dir. Técnico</div></div><div class="wf-step"><div class="wf-dot">4</div><div class="wf-label">Dir. Financeiro</div></div><div class="wf-step"><div class="wf-dot">5</div><div class="wf-label">Aprovação Final</div></div></div></div><div class="card"><div class="section-header"><div class="section-title">PFOs do Ciclo Atual</div><span class="badge info" id="ciclo-badge">— PFOs</span></div><div class="table-wrap"><table><thead><tr><th>CC</th><th>Arquivo</th><th>Receita</th><th>Margem</th><th>Status</th><th>Data</th></tr></thead><tbody id="ciclos-tbody"><tr><td colspan="6" class="td-muted" style="text-align:center;padding:20px">Carregando...</td></tr></tbody></table></div></div></div><div class="page fade-in" id="page-upload"><div class="section-header"><div class="section-title" style="font-size:16px">Upload de PFO</div></div><div class="grid-2" style="margin-bottom:0"><div><div class="upload-zone" onclick="document.getElementById('file-in').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')"><input type="file" id="file-in" accept=".xlsx,.xls" style="display:none" onchange="showFile(this)"><div class="upload-icon">📊</div><div class="upload-title">Arraste o arquivo PFO aqui</div><div class="upload-sub">ou clique para selecionar · .xlsx / .xls</div></div><div id="file-prev" style="display:none;margin-top:14px" class="card"><div class="section-title" style="margin-bottom:12px">Arquivo selecionado</div><div style="display:flex;align-items:center;gap:12px"><div style="font-size:24px">📄</div><div><div id="f-name" style="font-weight:500;font-size:13px">—</div><div id="f-size" style="font-size:11px;color:var(--muted);font-family:var(--mono)">—</div></div><a href="https://plataforma-pfo-ghjcxccztnvn2yatcnsfr4.streamlit.app" target="_blank" class="btn btn-sm" style="margin-left:auto">Enviar ↗</a></div></div></div><div class="card"><div class="section-title" style="margin-bottom:14px">Instruções</div><div style="display:flex;flex-direction:column;gap:10px;font-size:12px;color:var(--muted)"><div style="display:flex;gap:8px"><span style="color:var(--accent);font-family:var(--mono);font-size:10px;margin-top:2px">01</span><span>Exporte o PFO do Lumina no formato <strong style="color:var(--text)">.xlsx</strong></span></div><div style="display:flex;gap:8px"><span style="color:var(--accent);font-family:var(--mono);font-size:10px;margin-top:2px">02</span><span>O arquivo deve ter as abas <strong style="color:var(--text)">WBS</strong> e <strong style="color:var(--text)">PFO</strong></span></div><div style="display:flex;gap:8px"><span style="color:var(--accent);font-family:var(--mono);font-size:10px;margin-top:2px">03</span><span>O sistema valida automaticamente os dados</span></div><div style="display:flex;gap:8px"><span style="color:var(--accent);font-family:var(--mono);font-size:10px;margin-top:2px">04</span><span>Após upload, status muda para <span class="badge enviado">enviado</span></span></div></div><div class="divider"></div><a href="https://plataforma-pfo-ghjcxccztnvn2yatcnsfr4.streamlit.app" target="_blank" class="btn secondary btn-sm">Plataforma Completa ↗</a></div></div><div style="margin-top:14px" class="card"><div class="section-header"><div class="section-title">Uploads Recentes</div></div><div class="table-wrap"><table><thead><tr><th>Arquivo</th><th>Centro</th><th>Enviado por</th><th>Data</th><th>Status</th></tr></thead><tbody id="uploads-tbody"><tr><td colspan="5" class="td-muted" style="text-align:center;padding:20px">Carregando...</td></tr></tbody></table></div></div></div><div class="page fade-in" id="page-aprovacoes"><div class="section-header"><div class="section-title" style="font-size:16px">Aprovações</div></div><div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)"><div class="kpi-card green"><div class="kpi-label">Aprovados</div><div class="kpi-value"><span id="ap-apr">—</span></div><div class="kpi-sub">PFOs confirmados</div></div><div class="kpi-card amber"><div class="kpi-label">Aguardando</div><div class="kpi-value"><span id="ap-env">—</span></div><div class="kpi-sub">em análise</div></div><div class="kpi-card red"><div class="kpi-label">Reprovados</div><div class="kpi-value"><span id="ap-rep">—</span></div><div class="kpi-sub">necessitam reenvio</div></div></div><div class="card"><div class="section-header"><div class="section-title">Fila de Aprovação</div><a href="https://plataforma-pfo-ghjcxccztnvn2yatcnsfr4.streamlit.app" target="_blank" class="section-action">aprovar na plataforma →</a></div><div class="table-wrap"><table><thead><tr><th>Centro</th><th>Arquivo</th><th>Etapa</th><th>Status</th><th>Ação</th></tr></thead><tbody id="apr-tbody"><tr><td colspan="5" class="td-muted" style="text-align:center;padding:20px">Carregando...</td></tr></tbody></table></div></div></div><div class="page fade-in" id="page-centros"><div class="section-header"><div class="section-title" style="font-size:16px">Centros de Custo</div></div><div class="card"><div class="section-header"><div class="section-title">Todos os Centros</div><input type="text" id="search-cc" placeholder="Buscar..." onkeyup="filterCC(this.value)" style="background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:6px 12px;color:var(--text);font-family:var(--font);font-size:12px;outline:none;width:200px"></div><div class="table-wrap"><table><thead><tr><th>Código</th><th>Nome</th><th>Gestor</th><th>Status</th><th>Margem</th><th>Resultado</th></tr></thead><tbody id="cc-tbody"><tr><td colspan="6" class="td-muted" style="text-align:center;padding:20px">Carregando...</td></tr></tbody></table></div></div></div><div class="page fade-in" id="page-agente"><div class="section-header"><div class="section-title" style="font-size:16px">Agente IA — Analista PFO</div><span class="badge info">Claude Sonnet 4</span></div><div class="card" style="padding:0;overflow:hidden"><div class="chat-container"><div class="chat-messages" id="chat-msgs"><div class="chat-msg agent"><div class="msg-avatar">◉</div><div class="msg-bubble">Olá! Sou o Agente PFO da GSE, powered by Claude.<br><br>Posso analisar margem, pendências, status do ciclo e projetos em risco.<br><br>Como posso ajudar?</div></div></div><div class="chat-input-row"><textarea class="chat-input" id="chat-in" rows="1" placeholder="Pergunte sobre margem, pendências, ciclo..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"></textarea><button class="btn" id="send-btn" onclick="sendMsg()">Enviar</button></div></div></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn secondary btn-sm" onclick="qp('Como está o status do ciclo atual?')">Status do ciclo</button><button class="btn secondary btn-sm" onclick="qp('Quais são as pendências críticas?')">Pendências</button><button class="btn secondary btn-sm" onclick="qp('Como está a margem consolidada?')">Margem</button><button class="btn secondary btn-sm" onclick="qp('Faça um resumo executivo.')">Resumo executivo</button></div></div><div class="page fade-in" id="page-relatorios"><div class="section-header"><div class="section-title" style="font-size:16px">Relatórios</div></div><div class="grid-2"><div class="card" style="cursor:pointer" onclick="window.open('https://plataforma-pfo-ghjcxccztnvn2yatcnsfr4.streamlit.app','_blank')"><div style="font-size:24px;margin-bottom:10px">📊</div><div class="section-title" style="margin-bottom:6px">Dashboard Completo</div><div style="font-size:12px;color:var(--muted)">Acesse o dashboard com todos os filtros.</div><div class="btn secondary btn-sm" style="margin-top:14px;display:inline-block">Abrir ↗</div></div><div class="card" style="cursor:pointer" onclick="window.open('https://plataforma-pfo-ghjcxccztnvn2yatcnsfr4.streamlit.app','_blank')"><div style="font-size:24px;margin-bottom:10px">📑</div><div class="section-title" style="margin-bottom:6px">Exportar PowerPoint</div><div style="font-size:12px;color:var(--muted)">Gere apresentação executiva.</div><div class="btn secondary btn-sm" style="margin-top:14px;display:inline-block">Gerar ↗</div></div><div class="card" style="cursor:pointer" onclick="window.open('https://plataforma-pfo-ghjcxccztnvn2yatcnsfr4.streamlit.app','_blank')"><div style="font-size:24px;margin-bottom:10px">📋</div><div class="section-title" style="margin-bottom:6px">Relatório de Desvios</div><div style="font-size:12px;color:var(--muted)">Orçado vs forecast por centro.</div><div class="btn secondary btn-sm" style="margin-top:14px;display:inline-block">Exportar ↗</div></div><div class="card" style="cursor:pointer" onclick="window.open('https://plataforma-pfo-ghjcxccztnvn2yatcnsfr4.streamlit.app','_blank')"><div style="font-size:24px;margin-bottom:10px">🗂</div><div class="section-title" style="margin-bottom:6px">Histórico de Ciclos</div><div style="font-size:12px;color:var(--muted)">Compare ciclos anteriores.</div><div class="btn secondary btn-sm" style="margin-top:14px;display:inline-block">Acessar ↗</div></div></div></div></main><script>const SURL='https://plataforma-pfo-ghjcxccztnvn2yatcnsfr4.streamlit.app';const TK='';const RP='gsebergamo/plataforma-pfo';let D=null,CH=[];const PT={dashboard:'Dashboard Executivo',ciclos:'Ciclos & Status',upload:'Upload de PFO',aprovacoes:'Aprovações',centros:'Centros de Custo',agente:'Agente IA',relatorios:'Relatórios'};function showPage(n){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));const p=document.getElementById('page-'+n);if(p)p.classList.add('active','fade-in');document.querySelectorAll('.nav-item').forEach(i=>{if(i.getAttribute('onclick')?.includes(n))i.classList.add('active')});document.getElementById('page-title').textContent=PT[n]||n;if(n==='ciclos'&&D)rCiclos();if(n==='centros'&&D)rCentros();if(n==='aprovacoes'&&D)rAprov();if(n==='upload'&&D)rUploads()}async function loadData(){try{
-// Step 1: get file metadata to find SHA
-const meta=await fetch('https://api.github.com/repos/'+RP+'/contents/dados/plataforma.json',{headers:{'Authorization':'token '+TK}});
-const m=await meta.json();
-const blobSha=m.sha;
-// Step 2: fetch raw blob content (works for files >1MB)
-const blob=await fetch('https://api.github.com/repos/'+RP+'/git/blobs/'+blobSha,{headers:{'Authorization':'token '+TK,'Accept':'application/vnd.github.raw+json'}});
-const text=await blob.text();
-D=JSON.parse(text);render()}catch(e){console.error(e);setStatus('Erro ao carregar','crit')}}function sn(v){const n=parseFloat(v);return isNaN(n)?0:n}function fN(n){if(isNaN(n))return'—';if(Math.abs(n)>=1000)return(n/1000).toFixed(1)+'M';return n.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0})}function fM(m){if(!m)return'—';const[y,mo]=m.split('-');const ms=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];return(ms[parseInt(mo)-1]||mo)+'/'+y}function getMes(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')}function getSt(p,apr){const key=(p.arquivo||'').replace(/\.xlsm$/,'').replace(/\.xlsx$/,'').replace(/\.xls$/,'');const a=apr[key]||{};const st=a.status||'';if(st==='aprovado')return'aprovado';if(st==='reprovado')return'reprovado';if(st.includes('aguardando')||st.includes('validacao')||st.includes('aprovacao'))return'enviado';if(p.arquivo)return'enviado';return'pendente'}function setStatus(t,type){const p=document.getElementById('status-pill');p.className='status-pill '+type;document.getElementById('status-text').textContent=t}function render(){if(!D)return;const pfos=D.pfos||[];const mes=getMes();const pm=pfos;const apr=D.aprovacoes||{};const ccs=D.centros_custo||{};let rec=0,cst=0,a=0,e=0,p=0,r=0;pm.forEach(pf=>{rec+=sn((pf.dre?.receita?.projetado||0)*1000);cst+=sn((pf.dre?.custo?.projetado||0)*1000);const st=getSt(pf,apr);if(st==='aprovado')a++;else if(st==='enviado')e++;else if(st==='reprovado')r++;else p++});const tot=a+e+p+r||1;const res=rec-cst;const mar=rec>0?res/rec*100:0;document.getElementById('kpi-rec').textContent=fN(rec/1000);document.getElementById('kpi-mar').textContent=mar.toFixed(1);document.getElementById('kpi-pfo').textContent=pm.length;document.getElementById('kpi-pfo-sub').textContent=Object.keys(ccs).length+' centros ativos';const pend=p+r;document.getElementById('kpi-pen').textContent=pend;document.getElementById('badge-p').textContent=pend;document.getElementById('cycle-label').textContent='Ciclo: '+fM(mes)+' · '+pm.length+' PFOs';const sc=Math.round(a/tot*100);document.getElementById('score-n').textContent=sc;const ci=document.getElementById('score-c');setTimeout(()=>{ci.style.strokeDashoffset=251.3-(251.3*sc/100)},100);const col=sc>=80?'var(--green)':sc>=50?'var(--amber)':'var(--red)';ci.style.stroke=col;document.getElementById('score-s').textContent=sc>=80?'✓ Saudável':sc>=50?'⚠ Atenção':'✗ Crítico';document.getElementById('score-s').style.color=col;const pct=n=>Math.round(n/tot*100);['apr','env','pen','rep'].forEach((k,i)=>{const vals=[a,e,p,r];document.getElementById('pr-'+k).textContent=vals[i]+' ('+pct(vals[i])+'%)'});setTimeout(()=>{document.getElementById('pf-apr').style.width=pct(a)+'%';document.getElementById('pf-env').style.width=pct(e)+'%';document.getElementById('pf-pen').style.width=pct(p)+'%';document.getElementById('pf-rep').style.width=pct(r)+'%'},200);['apr','env','pen','rep'].forEach((k,i)=>{document.getElementById('st-'+k).textContent=[a,e,p,r][i]});document.getElementById('ap-apr').textContent=a;document.getElementById('ap-env').textContent=e;document.getElementById('ap-rep').textContent=r;if(r>0)setStatus('Atenção requerida','warn');else if(sc>=70)setStatus('Ciclo saudável','ok');else setStatus('Ciclo em andamento','warn');const mx=Math.max(a,e,p,r,1);document.getElementById('chart-bars').innerHTML=[{l:'Aprov.',v:a,c:'var(--green)'},{l:'Env.',v:e,c:'var(--accent)'},{l:'Pend.',v:p,c:'var(--amber)'},{l:'Repr.',v:r,c:'var(--red)'}].map(b=>'<div class="bar-col"><div class="bar-fill" style="background:'+b.c+';height:'+(Math.round(b.v/mx*72)+4)+'px"></div><div class="bar-label">'+b.l+'</div></div>').join('');const sorted=[...pm].sort((x,y)=>{const rx=sn((x.dre?.receita?.projetado||0)*1000),ry=sn((y.dre?.receita?.projetado||0)*1000),cx=sn((x.dre?.custo?.projetado||0)*1000),cy=sn((y.dre?.custo?.projetado||0)*1000);return(rx>0?(rx-cx)/rx:0)-(ry>0?(ry-cy)/ry:0)}).slice(0,6);document.getElementById('proj-tbody').innerHTML=sorted.length?sorted.map(pf=>{const rc=sn(pf.receita_total||pf.receita),cs=sn(pf.custo_total||pf.custo),mg=rc>0?(rc-cs)/rc*100:0,st=getSt(pf,apr,mes),mc=mg<0?'var(--red)':mg<5?'var(--amber)':'var(--green)',nm=(pf.arquivo||pf.cc_codigo||'—').replace('PFO_','').replace('.xlsx','');return'<tr><td class="td-mono">'+nm.substring(0,20)+'</td><td class="td-mono">R$ '+fN(rc/1000)+'k</td><td style="color:'+mc+';font-family:var(--mono);font-size:11px">'+mg.toFixed(1)+'%</td><td><span class="badge '+st+'">'+st+'</span></td></tr>'}).join(''):'<tr><td colspan="4" class="td-muted" style="text-align:center;padding:20px">Sem dados</td></tr>';const als=[];if(r>0)als.push({t:'danger',i:'✗',m:r+' PFO(s) reprovado(s) aguardando reenvio urgente.'});if(p>3)als.push({t:'warn',i:'⚠',m:p+' centros ainda não enviaram o PFO.'});if(mar<5)als.push({t:'warn',i:'⚠',m:'Margem de '+mar.toFixed(1)+'% abaixo da meta.'});if(!als.length)als.push({t:'info',i:'✓',m:'Nenhum alerta crítico. Ciclo normal.'});document.getElementById('alertas-list').innerHTML=als.map(a=>'<div class="alert '+a.t+'"><span class="alert-icon">'+a.i+'</span><span>'+a.m+'</span></div>').join('')}function rCiclos(){if(!D)return;const pfos=D.pfos||[],mes=getMes(),pm=pfos,apr=D.aprovacoes||{};document.getElementById('ciclo-badge').textContent=pm.length+' PFOs';document.getElementById('ciclo-info').textContent='Ciclo '+fM(mes)+' · '+pm.length+' PFOs';document.getElementById('ciclos-tbody').innerHTML=pm.length?pm.map(p=>{const rc=sn((p.dre?.receita?.projetado||0)*1000),cs=sn((p.dre?.custo?.projetado||0)*1000),mg=rc>0?(rc-cs)/rc*100:0,st=getSt(p,apr),mc=mg<0?'var(--red)':mg<5?'var(--amber)':'var(--green)',dt=p.data_upload?new Date(p.data_upload).toLocaleDateString('pt-BR'):'—';return'<tr><td class="td-mono">'+(p.projeto||'—')+'</td><td style="font-size:11px;color:var(--muted)">'+(p.arquivo||'—').replace('.xlsx','').substring(0,30)+'</td><td class="td-mono">R$ '+fN(rc/1000)+'k</td><td style="color:'+mc+';font-family:var(--mono);font-size:11px">'+mg.toFixed(1)+'%</td><td><span class="badge '+st+'">'+st+'</span></td><td class="td-muted td-mono">'+dt+'</td></tr>'}).join(''):'<tr><td colspan="6" class="td-muted" style="text-align:center;padding:20px">Nenhum PFO</td></tr>'}let ccData=[];function rCentros(){if(!D)return;const ccs=D.centros_custo||{},pfos=D.pfos||[],mes=getMes(),pm=pfos,apr=D.aprovacoes||{};ccData=Object.entries(ccs).map(([cod,cc])=>{const pf=pm.find(p=>p.projeto===cod||p.projeto===cc.nome||(p.arquivo||'').includes(cod)),rc=pf?sn((pf.dre?.receita?.projetado||0)*1000):0,cs=pf?sn((pf.dre?.custo?.projetado||0)*1000):0,mg=rc>0?(rc-cs)/rc*100:0,st=pf?getSt(pf,apr,mes):'pendente';return{cod,nome:cc.nome||cc.name||cod,gestor:cc.gestor||'—',st,mg,res:rc-cs}});rCCT(ccData)}function rCCT(data){document.getElementById('cc-tbody').innerHTML=data.length?data.slice(0,50).map(c=>{const mc=c.mg<0?'var(--red)':c.mg<5?'var(--amber)':'var(--green)';return'<tr><td class="td-mono">'+c.cod+'</td><td>'+c.nome.substring(0,30)+'</td><td class="td-muted">'+c.gestor.substring(0,20)+'</td><td><span class="badge '+c.st+'">'+c.st+'</span></td><td style="color:'+mc+';font-family:var(--mono);font-size:11px">'+c.mg.toFixed(1)+'%</td><td class="td-mono" style="color:'+(c.res>=0?'var(--green)':'var(--red)')+'">R$ '+fN(c.res/1000)+'k</td></tr>'}).join(''):'<tr><td colspan="6" class="td-muted" style="text-align:center;padding:20px">Nenhum centro</td></tr>'}function filterCC(q){rCCT(ccData.filter(c=>c.cod.toLowerCase().includes(q.toLowerCase())||c.nome.toLowerCase().includes(q.toLowerCase())))}function rAprov(){if(!D)return;const pfos=D.pfos_mensais||[],mes=getMes(),pm=pfos.filter(p=>p.mes_ref===mes),apr=D.aprovacoes||{},ag=pm.filter(p=>getSt(p,apr)==='enviado');document.getElementById('apr-tbody').innerHTML=ag.length?ag.map(p=>{const key=(p.arquivo||'').replace(/\.xl.m$/,'').replace('.xlsx',''),a=apr[key]||{},dirs=a.aprovacoes_diretoria||{},et=Object.keys(dirs).length>=2?'Dir. Financeiro':Object.keys(dirs).length>=1?'Dir. Técnico':'Backoffice';return'<tr><td class="td-mono">'+(p.projeto||'—')+'</td><td style="font-size:11px;color:var(--muted)">'+(p.arquivo||'—').replace(/\.xl.m$/,'').substring(0,25)+'</td><td class="td-muted">'+et+'</td><td><span class="badge enviado">aguardando</span></td><td><a href="'+SURL+'" target="_blank" class="section-action">Aprovar ↗</a></td></tr>'}).join(''):'<tr><td colspan="5" class="td-muted" style="text-align:center;padding:20px">Nenhum PFO aguardando</td></tr>'}function rUploads(){if(!D)return;const pfos=(D.pfos||[]).slice(0,10);document.getElementById('uploads-tbody').innerHTML=pfos.map(p=>{const dt=p.upload?.data_hora||'—';return'<tr><td style="font-size:11px;color:var(--muted)">'+(p.arquivo||'—').substring(0,30)+'</td><td class="td-mono">'+(p.projeto||'—')+'</td><td class="td-muted">'+(p.usuario||p.enviado_por||'—')+'</td><td class="td-muted td-mono">'+dt+'</td><td><span class="badge '+(p.arquivo?'enviado':'pendente')+'">'+(p.arquivo?'enviado':'pendente')+'</span></td></tr>'}).join('')}function showFile(inp){if(inp.files[0]){document.getElementById('f-name').textContent=inp.files[0].name;document.getElementById('f-size').textContent=(inp.files[0].size/1024).toFixed(1)+' KB';document.getElementById('file-prev').style.display='block'}}let chatHist=[];async function sendMsg(){const inp=document.getElementById('chat-in');const msg=inp.value.trim();if(!msg)return;inp.value='';addMsg('user',msg);chatHist.push({role:'user',content:msg});document.getElementById('send-btn').disabled=true;const tid=addTyping();try{const ctx=D?'Ciclo: '+fM(getMes())+'. PFOs: '+(D.pfos||[]).length+'. Centros: '+Object.keys(D.centros_custo||{}).length+(D.pfos?.length?'. Receita total: R$ '+fN((D.pfos.reduce((s,p)=>s+sn((p.dre?.receita?.projetado||0)),0)).toFixed(0))+'k':''):'Dados não carregados.';const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:'Você é o Agente PFO da GSE. Analista financeiro especialista em gestão de obras. Responda em português, de forma executiva.\n\nContexto: '+ctx,messages:chatHist})});const data=await res.json();removeTyping(tid);const reply=data.content?.[0]?.text||'Sem resposta.';addMsg('agent',reply);chatHist.push({role:'assistant',content:reply})}catch(e){removeTyping(tid);addMsg('agent','Erro ao conectar ao agente.')}document.getElementById('send-btn').disabled=false}function addMsg(role,text){const msgs=document.getElementById('chat-msgs');const div=document.createElement('div');div.className='chat-msg '+role;div.innerHTML='<div class="msg-avatar">'+(role==='user'?'PB':'◉')+'</div><div class="msg-bubble">'+text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')+'</div>';msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight}function addTyping(){const msgs=document.getElementById('chat-msgs');const id='t-'+Date.now();const div=document.createElement('div');div.className='chat-msg agent';div.id=id;div.innerHTML='<div class="msg-avatar">◉</div><div class="msg-bubble"><div class="typing"><span></span><span></span><span></span></div></div>';msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;return id}function removeTyping(id){const el=document.getElementById(id);if(el)el.remove()}function qp(t){document.getElementById('chat-in').value=t;sendMsg()}loadData();</script></body></html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Plataforma PFO — Dashboard Financeiro Executivo — Global Service Engenharia">
+  <meta name="theme-color" content="#0a0c10">
+  <title>Plataforma PFO — GSE</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+
+<body>
+  <!-- Mobile Menu Toggle -->
+  <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">☰</button>
+
+  <!-- ================================================================
+       SIDEBAR
+       ================================================================ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <!-- Logo GSE -->
+      <div class="logo-mark">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <rect width="36" height="36" rx="8" fill="url(#logo-grad)"/>
+          <text x="18" y="23" text-anchor="middle" font-family="'DM Sans', sans-serif" font-weight="700" font-size="16" fill="white">GS</text>
+          <defs>
+            <linearGradient id="logo-grad" x1="0" y1="0" x2="36" y2="36">
+              <stop stop-color="#4f8ef7"/>
+              <stop offset="1" stop-color="#7c5ef7"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div class="company">Global Service<br>Engenharia</div>
+      <div class="sub">Plataforma PFO</div>
+      <div class="badge-v">v5.0</div>
+    </div>
+
+    <nav>
+      <div class="nav-sec">Principal</div>
+      <div class="nav-item active" data-page="dashboard">
+        <span class="nav-icon">◈</span> Dashboard
+      </div>
+      <div class="nav-item" data-page="ciclos">
+        <span class="nav-icon">◷</span> Ciclos &amp; Status
+        <span class="nav-badge" id="badge-p">0</span>
+      </div>
+
+      <div class="nav-sec">Operacional</div>
+      <div class="nav-item" data-page="upload">
+        <span class="nav-icon">↑</span> Upload PFO
+      </div>
+      <div class="nav-item" data-page="aprovacoes">
+        <span class="nav-icon">✓</span> Aprovações
+      </div>
+      <div class="nav-item" data-page="centros">
+        <span class="nav-icon">⊞</span> Centros de Custo
+      </div>
+
+      <div class="nav-sec">Inteligência</div>
+      <div class="nav-item" data-page="agente">
+        <span class="nav-icon">◉</span> Agente IA
+      </div>
+      <div class="nav-item" data-page="relatorios">
+        <span class="nav-icon">▤</span> Relatórios
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="avatar" id="user-avatar">PB</div>
+        <div>
+          <div class="user-name" id="user-name">Paulo Bergamo</div>
+          <div class="user-role" id="user-role">DIRETOR</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ================================================================
+       MAIN CONTENT
+       ================================================================ -->
+  <main class="main">
+    <!-- Topbar -->
+    <header class="topbar">
+      <span class="topbar-title" id="page-title">Dashboard Executivo</span>
+      <span class="topbar-cycle" id="cycle-label">Ciclo: —</span>
+      <div class="topbar-right">
+        <button class="btn secondary btn-sm" id="btn-refresh" title="Atualizar dados">↻ Atualizar</button>
+        <div class="status-pill warn" id="status-pill">
+          <div class="dot pulse"></div>
+          <span id="status-text">Carregando...</span>
+        </div>
+        <a href="https://plataforma-pfo-ghjcxccztnvn2yatcnsfr4.streamlit.app" target="_blank" class="btn secondary btn-sm">↗ App completo</a>
+      </div>
+    </header>
+
+    <!-- ============================================================
+         PAGE: Dashboard
+         ============================================================ -->
+    <div class="page active fade-in" id="page-dashboard">
+      <!-- KPI Grid -->
+      <div class="kpi-grid">
+        <div class="kpi-card blue">
+          <div class="kpi-label">Receita Projetada</div>
+          <div class="kpi-value"><span id="kpi-rec">—</span><span class="unit">mil</span></div>
+          <div class="kpi-sub" id="kpi-rec-sub">carregando...</div>
+        </div>
+        <div class="kpi-card green">
+          <div class="kpi-label">Margem Consolidada</div>
+          <div class="kpi-value"><span id="kpi-mar">—</span><span class="unit">%</span></div>
+          <div class="kpi-sub">vs orçado</div>
+        </div>
+        <div class="kpi-card amber">
+          <div class="kpi-label">PFOs no Ciclo</div>
+          <div class="kpi-value"><span id="kpi-pfo">—</span></div>
+          <div class="kpi-sub" id="kpi-pfo-sub">— centros ativos</div>
+        </div>
+        <div class="kpi-card red">
+          <div class="kpi-label">Pendências</div>
+          <div class="kpi-value"><span id="kpi-pen">—</span></div>
+          <div class="kpi-sub">aguardando ação</div>
+        </div>
+      </div>
+
+      <!-- Status + Alerts -->
+      <div class="grid-3">
+        <div class="card">
+          <div class="section-header">
+            <div class="section-title">Status do Ciclo</div>
+            <span class="section-action" data-page="ciclos" style="cursor:pointer">ver detalhe →</span>
+          </div>
+          <div style="display:flex;gap:24px;align-items:center">
+            <div class="score-ring">
+              <div class="score-circle">
+                <svg class="score-svg" width="110" height="110">
+                  <circle class="score-bg" cx="55" cy="55" r="44" />
+                  <circle class="score-fg" id="score-c" cx="55" cy="55" r="44"
+                    stroke-dasharray="276.5" stroke-dashoffset="276.5" stroke="var(--green)" />
+                </svg>
+                <div class="score-text">
+                  <div class="score-num" id="score-n">—</div>
+                  <div class="score-label">SCORE</div>
+                </div>
+              </div>
+              <div class="score-status" id="score-s">—</div>
+            </div>
+            <div style="flex:1">
+              <div class="progress-row">
+                <div class="progress-label">
+                  <span style="font-size:11px;color:var(--muted)">Aprovados</span>
+                  <span class="td-mono" id="pr-apr">—</span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" id="pf-apr" style="background:var(--green);width:0%"></div></div>
+              </div>
+              <div class="progress-row">
+                <div class="progress-label">
+                  <span style="font-size:11px;color:var(--muted)">Enviados</span>
+                  <span class="td-mono" id="pr-env">—</span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" id="pf-env" style="background:var(--accent);width:0%"></div></div>
+              </div>
+              <div class="progress-row">
+                <div class="progress-label">
+                  <span style="font-size:11px;color:var(--muted)">Pendentes</span>
+                  <span class="td-mono" id="pr-pen">—</span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" id="pf-pen" style="background:var(--amber);width:0%"></div></div>
+              </div>
+              <div class="progress-row">
+                <div class="progress-label">
+                  <span style="font-size:11px;color:var(--muted)">Reprovados</span>
+                  <span class="td-mono" id="pr-rep">—</span>
+                </div>
+                <div class="progress-track"><div class="progress-fill" id="pf-rep" style="background:var(--red);width:0%"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-header">
+            <div class="section-title">Alertas Ativos</div>
+          </div>
+          <div id="alertas-list">
+            <div class="skeleton" style="height:42px;margin-bottom:8px"></div>
+            <div class="skeleton" style="height:42px;margin-bottom:8px"></div>
+            <div class="skeleton" style="height:42px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Projects + Chart -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="section-header">
+            <div class="section-title">Projetos em Atenção</div>
+            <span class="section-action" data-page="centros" style="cursor:pointer">todos →</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Projeto</th><th>Receita</th><th>Margem</th><th>Status</th></tr>
+              </thead>
+              <tbody id="proj-tbody">
+                <tr><td colspan="4" class="td-muted" style="text-align:center;padding:20px">
+                  <div class="loading-overlay"><div class="spinner"></div> Carregando...</div>
+                </td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-header">
+            <div class="section-title">Distribuição de Status</div>
+          </div>
+          <div class="chart-bars" id="chart-bars">
+            <div style="width:100%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px">
+              <div class="loading-overlay"><div class="spinner"></div> Carregando...</div>
+            </div>
+          </div>
+          <div class="stats-row" style="border:none;margin:20px 0 0">
+            <div class="stat-item">
+              <div class="stat-num" id="st-apr" style="color:var(--green)">—</div>
+              <div class="stat-lbl">Aprovados</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-num" id="st-env" style="color:var(--accent)">—</div>
+              <div class="stat-lbl">Enviados</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-num" id="st-pen" style="color:var(--amber)">—</div>
+              <div class="stat-lbl">Pendentes</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-num" id="st-rep" style="color:var(--red)">—</div>
+              <div class="stat-lbl">Reprovados</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         PAGE: Ciclos & Governança
+         ============================================================ -->
+    <div class="page fade-in" id="page-ciclos">
+      <div class="section-header">
+        <div class="section-title" style="font-size:16px">Ciclos &amp; Governança</div>
+      </div>
+
+      <div class="alert info">
+        <span class="alert-icon">ℹ</span>
+        <span id="ciclo-info">Ciclo atual em andamento.</span>
+      </div>
+
+      <div class="card" style="margin-bottom:14px">
+        <div class="section-title" style="margin-bottom:16px">Fluxo de Aprovação</div>
+        <div class="workflow-steps">
+          <div class="wf-step done">
+            <div class="wf-dot">✓</div>
+            <div class="wf-label">Envio PFO</div>
+          </div>
+          <div class="wf-step active">
+            <div class="wf-dot">2</div>
+            <div class="wf-label">Validação Backoffice</div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-dot">3</div>
+            <div class="wf-label">Dir. Técnico</div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-dot">4</div>
+            <div class="wf-label">Dir. Financeiro</div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-dot">5</div>
+            <div class="wf-label">Aprovação Final</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-header">
+          <div class="section-title">PFOs do Ciclo Atual</div>
+          <span class="badge info" id="ciclo-badge">— PFOs</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>CC</th><th>Arquivo</th><th>Receita</th><th>Margem</th><th>Status</th><th>Data</th></tr>
+            </thead>
+            <tbody id="ciclos-tbody">
+              <tr><td colspan="6" class="td-muted" style="text-align:center;padding:20px">
+                <div class="loading-overlay"><div class="spinner"></div> Carregando...</div>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         PAGE: Upload de PFO
+         ============================================================ -->
+    <div class="page fade-in" id="page-upload">
+      <div class="section-header">
+        <div class="section-title" style="font-size:16px">Upload de PFO</div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:0">
+        <div>
+          <div class="upload-zone" id="upload-zone">
+            <input type="file" id="file-in" accept=".xlsx,.xls" style="display:none">
+            <div class="upload-icon">📊</div>
+            <div class="upload-title">Arraste o arquivo PFO aqui</div>
+            <div class="upload-sub">ou clique para selecionar · .xlsx / .xls</div>
+          </div>
+
+          <div id="file-prev" style="display:none;margin-top:14px" class="card">
+            <div class="section-title" style="margin-bottom:12px">Arquivo selecionado</div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="font-size:24px">📄</div>
+              <div>
+                <div id="f-name" style="font-weight:500;font-size:13px">—</div>
+                <div id="f-size" style="font-size:11px;color:var(--muted);font-family:var(--mono)">—</div>
+              </div>
+              <a href="https://plataforma-pfo-ghjcxccztnvn2yatcnsfr4.streamlit.app" target="_blank" class="btn btn-sm" style="margin-left:auto">Enviar ↗</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title" style="margin-bottom:14px">Instruções</div>
+          <div class="instruction-list">
+            <div class="instruction-item">
+              <span class="instruction-num">01</span>
+              <span>Exporte o PFO do Lumina no formato <strong style="color:var(--text)">.xlsx</strong></span>
+            </div>
+            <div class="instruction-item">
+              <span class="instruction-num">02</span>
+              <span>O arquivo deve ter as abas <strong style="color:var(--text)">WBS</strong> e <strong style="color:var(--text)">PFO</strong></span>
+            </div>
+            <div class="instruction-item">
+              <span class="instruction-num">03</span>
+              <span>O sistema valida automaticamente os dados</span>
+            </div>
+            <div class="instruction-item">
+              <span class="instruction-num">04</span>
+              <span>Após upload, status muda para <span class="badge enviado">enviado</span></span>
+            </div>
+          </div>
+          <div class="divider"></div>
+          <a href="https://plataforma-pfo-ghjcxccztnvn2yatcnsfr4.streamlit.app" target="_blank" class="btn secondary btn-sm">Plataforma Completa ↗</a>
+        </div>
+      </div>
+
+      <div style="margin-top:14px" class="card">
+        <div class="section-header">
+          <div class="section-title">Uploads Recentes</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Arquivo</th><th>Centro</th><th>Enviado por</th><th>Data</th><th>Status</th></tr>
+            </thead>
+            <tbody id="uploads-tbody">
+              <tr><td colspan="5" class="td-muted" style="text-align:center;padding:20px">
+                <div class="loading-overlay"><div class="spinner"></div> Carregando...</div>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         PAGE: Aprovações
+         ============================================================ -->
+    <div class="page fade-in" id="page-aprovacoes">
+      <div class="section-header">
+        <div class="section-title" style="font-size:16px">Aprovações</div>
+      </div>
+
+      <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="kpi-card green">
+          <div class="kpi-label">Aprovados</div>
+          <div class="kpi-value"><span id="ap-apr">—</span></div>
+          <div class="kpi-sub">PFOs confirmados</div>
+        </div>
+        <div class="kpi-card amber">
+          <div class="kpi-label">Aguardando</div>
+          <div class="kpi-value"><span id="ap-env">—</span></div>
+          <div class="kpi-sub">em análise</div>
+        </div>
+        <div class="kpi-card red">
+          <div class="kpi-label">Reprovados</div>
+          <div class="kpi-value"><span id="ap-rep">—</span></div>
+          <div class="kpi-sub">necessitam reenvio</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-header">
+          <div class="section-title">Fila de Aprovação</div>
+          <a href="https://plataforma-pfo-ghjcxccztnvn2yatcnsfr4.streamlit.app" target="_blank" class="section-action">aprovar na plataforma →</a>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Centro</th><th>Arquivo</th><th>Etapa</th><th>Status</th><th>Ação</th></tr>
+            </thead>
+            <tbody id="apr-tbody">
+              <tr><td colspan="5" class="td-muted" style="text-align:center;padding:20px">
+                <div class="loading-overlay"><div class="spinner"></div> Carregando...</div>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         PAGE: Centros de Custo
+         ============================================================ -->
+    <div class="page fade-in" id="page-centros">
+      <div class="section-header">
+        <div class="section-title" style="font-size:16px">Centros de Custo</div>
+      </div>
+
+      <div class="card">
+        <div class="section-header">
+          <div class="section-title">Todos os Centros</div>
+          <input type="text" id="search-cc" class="search-input" placeholder="Buscar centro...">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Código</th><th>Nome</th><th>Gestor</th><th>Status</th><th>Margem</th><th>Resultado</th></tr>
+            </thead>
+            <tbody id="cc-tbody">
+              <tr><td colspan="6" class="td-muted" style="text-align:center;padding:20px">
+                <div class="loading-overlay"><div class="spinner"></div> Carregando...</div>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         PAGE: Agente IA
+         ============================================================ -->
+    <div class="page fade-in" id="page-agente">
+      <div class="section-header">
+        <div class="section-title" style="font-size:16px">Agente IA — Analista PFO</div>
+        <span class="badge info">Claude Sonnet 4</span>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden">
+        <div class="chat-container">
+          <div class="chat-messages" id="chat-msgs">
+            <div class="chat-msg agent">
+              <div class="msg-avatar">◉</div>
+              <div class="msg-bubble">
+                Olá! Sou o Agente PFO da GSE, powered by Claude.<br><br>
+                Posso analisar margem, pendências, status do ciclo e projetos em risco.<br><br>
+                Como posso ajudar?
+              </div>
+            </div>
+          </div>
+          <div class="chat-input-row">
+            <textarea class="chat-input" id="chat-in" rows="1" placeholder="Pergunte sobre margem, pendências, ciclo..."></textarea>
+            <button class="btn" id="send-btn">Enviar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="quick-prompts" id="quick-prompts">
+        <!-- Populated by agente.js -->
+      </div>
+    </div>
+
+    <!-- ============================================================
+         PAGE: Relatórios
+         ============================================================ -->
+    <div class="page fade-in" id="page-relatorios">
+      <div class="section-header">
+        <div class="section-title" style="font-size:16px">Relatórios</div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card report-card" data-report="dashboard">
+          <div class="report-icon">📊</div>
+          <div class="section-title" style="margin-bottom:6px">Dashboard Completo</div>
+          <div style="font-size:12px;color:var(--muted)">Acesse o dashboard com todos os filtros.</div>
+          <div class="btn secondary btn-sm" style="margin-top:14px;display:inline-block">Abrir ↗</div>
+        </div>
+
+        <div class="card report-card" data-report="powerpoint">
+          <div class="report-icon">📑</div>
+          <div class="section-title" style="margin-bottom:6px">Exportar PowerPoint</div>
+          <div style="font-size:12px;color:var(--muted)">Gere apresentação executiva.</div>
+          <div class="btn secondary btn-sm" style="margin-top:14px;display:inline-block">Gerar ↗</div>
+        </div>
+
+        <div class="card report-card" data-report="desvios">
+          <div class="report-icon">📋</div>
+          <div class="section-title" style="margin-bottom:6px">Relatório de Desvios</div>
+          <div style="font-size:12px;color:var(--muted)">Orçado vs forecast por centro.</div>
+          <div class="btn secondary btn-sm" style="margin-top:14px;display:inline-block">Exportar ↗</div>
+        </div>
+
+        <div class="card report-card" data-report="historico">
+          <div class="report-icon">🗂</div>
+          <div class="section-title" style="margin-bottom:6px">Histórico de Ciclos</div>
+          <div style="font-size:12px;color:var(--muted)">Compare ciclos anteriores.</div>
+          <div class="btn secondary btn-sm" style="margin-top:14px;display:inline-block">Acessar ↗</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- App Entry Point -->
+  <script type="module" src="assets/js/app.js"></script>
+</body>
+</html>
