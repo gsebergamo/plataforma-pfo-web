@@ -62,6 +62,11 @@ h<!DOCTYPE html>
       <div class="nav-item" data-page="relatorios">
         <span class="nav-icon">▤</span> Relatórios
       </div>
+
+      <div class="nav-sec nav-admin-only" style="display:none">Administração</div>
+      <div class="nav-item nav-admin-only" data-page="usuarios" style="display:none">
+        <span class="nav-icon">👥</span> Gestão de Usuários
+      </div>
     </nav>
 
     <div class="sidebar-footer">
@@ -655,7 +660,36 @@ h<!DOCTYPE html>
         </div>
       </div>
     </div>
-  </main>
+  
+
+    <!-- ============================================================
+         PAGE: Gestão de Usuários (Admin Only)
+    ============================================================ -->
+    <div class="page fade-in" id="page-usuarios">
+      <div class="section-header">
+        <div class="section-title" style="font-size:16px">Gestão de Usuários</div>
+        <button class="btn btn-sm" id="btn-novo-usuario">+ Novo Usuário</button>
+      </div>
+      <div class="card">
+        <div class="section-header">
+          <div class="section-title">Usuários Cadastrados</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Login</th><th>Nome</th><th>Email</th><th>Alçada</th><th>Status</th><th>Ações</th></tr>
+            </thead>
+            <tbody id="usuarios-tbody">
+              <tr><td colspan="6" class="td-muted" style="text-align:center;padding:20px">
+                <div class="loading-overlay"><div class="spinner"></div> Carregando...</div>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+</main>
 
   <!-- Auth + Data Bootstrap -->
   <script>
@@ -702,7 +736,7 @@ h<!DOCTYPE html>
               var data = await res.json();
               if (!res.ok || !data.token) throw new Error(data.error || 'Credenciais invalidas');
               localStorage.setItem('pfo_token', data.token);
-              var userObj = { id: data.usuario, name: data.nome, initials: data.nome.split(' ').map(function(n){ return n[0]; }).join('').substring(0,2).toUpperCase(), role: (data.alcada || 'usuario').toUpperCase(), alcada: data.alcada, centros_custo: data.centros_custo || ['*'] };
+              var userObj = { id: data.usuario, name: data.nome, initials: data.nome.split(' ').map(function(n){ return n[0]; }).join('').substring(0,2).toUpperCase(), role: (data.alcada || 'usuario').toUpperCase(), alcada: data.alcada, centros_custo: data.centros_custo || ['*'], email: data.email || '' };
               localStorage.setItem('pfo_user', JSON.stringify(userObj));
               document.getElementById('login-screen').style.display = 'none';
               var nameEl = document.getElementById('user-name');
@@ -745,6 +779,72 @@ h<!DOCTYPE html>
             } catch (err) { errEl.textContent = err.message; errEl.style.display = 'block'; }
           });
         }
+
+
+      // === FORGOT PWD ===
+      var forgotLink = document.getElementById('link-forgot-pwd');
+      var modalForgot = document.getElementById('modal-forgot');
+      var cancelForgot = document.getElementById('btn-cancel-forgot');
+      if (forgotLink && modalForgot) {
+        forgotLink.addEventListener('click', function(e) {
+          e.preventDefault();
+          modalForgot.style.display = 'flex';
+        });
+      }
+      if (cancelForgot && modalForgot) {
+        cancelForgot.addEventListener('click', function() {
+          modalForgot.style.display = 'none';
+          document.getElementById('form-forgot').reset();
+          document.getElementById('forgot-error').style.display = 'none';
+          document.getElementById('forgot-success').style.display = 'none';
+        });
+      }
+      if (modalForgot) {
+        modalForgot.addEventListener('click', function(e) {
+          if (e.target === modalForgot) modalForgot.style.display = 'none';
+        });
+      }
+      var formForgot = document.getElementById('form-forgot');
+      if (formForgot) {
+        formForgot.addEventListener('submit', async function(evt) {
+          evt.preventDefault();
+          var errEl = document.getElementById('forgot-error');
+          var sucEl = document.getElementById('forgot-success');
+          var btn = document.getElementById('btn-send-forgot');
+          errEl.style.display = 'none';
+          sucEl.style.display = 'none';
+          btn.disabled = true;
+          btn.textContent = 'Enviando...';
+          try {
+            var res = await fetch('/api/recuperar-senha', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ usuario: document.getElementById('forgot-user').value.trim() })
+            });
+            var data = await res.json();
+            sucEl.textContent = data.message || 'Se o usuario tiver email cadastrado, uma senha temporaria foi enviada.';
+            sucEl.style.display = 'block';
+            setTimeout(function() { modalForgot.style.display = 'none'; sucEl.style.display = 'none'; }, 4000);
+          } catch(err) {
+            errEl.textContent = err.message || 'Erro de conexao';
+            errEl.style.display = 'block';
+          } finally {
+            btn.disabled = false;
+            btn.textContent = 'Enviar';
+          }
+        });
+      }
+
+      // === ADMIN NAV ===
+      (function showAdminNav() {
+        try {
+          var u = JSON.parse(localStorage.getItem('pfo_user') || '{}');
+          if (u.alcada === 'admin') {
+            document.querySelectorAll('.nav-admin-only').forEach(function(el) { el.style.display = ''; });
+          }
+        } catch(e) {}
+      })();
+
       });
     })();
   </script>
@@ -767,6 +867,68 @@ h<!DOCTYPE html>
     </div>
   </div>
 
+  <!-- MODAL: ESQUECI MINHA SENHA -->
+  <div id="modal-forgot" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.6);align-items:center;justify-content:center">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:32px;width:100%;max-width:380px;text-align:center">
+      <h3 style="color:var(--text);font-size:16px;margin:0 0 8px">Recuperar Senha</h3>
+      <p style="color:var(--muted);font-size:12px;margin:0 0 20px">Informe seu login. Se houver email cadastrado, enviaremos uma senha temporária.</p>
+      <form id="form-forgot" autocomplete="off">
+        <input type="text" id="forgot-user" placeholder="Seu login (ex: paulo.bergamo)" required style="width:100%;padding:10px 14px;margin-bottom:14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;box-sizing:border-box;outline:none" />
+        <div style="display:flex;gap:8px">
+          <button type="button" id="btn-cancel-forgot" style="flex:1;padding:10px;background:var(--bg3);color:var(--muted);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;font-family:var(--font)">Cancelar</button>
+          <button type="submit" id="btn-send-forgot" style="flex:1;padding:10px;background:linear-gradient(135deg,#4f8ef7,#7c5ef7);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;font-family:var(--font)">Enviar</button>
+        </div>
+        <p id="forgot-error" style="color:var(--red);font-size:12px;margin:10px 0 0;display:none"></p>
+        <p id="forgot-success" style="color:var(--green);font-size:12px;margin:10px 0 0;display:none"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: NOVO / EDITAR USUARIO -->
+  <div id="modal-usuario" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.6);align-items:center;justify-content:center">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:32px;width:100%;max-width:440px;text-align:left">
+      <h3 id="modal-usuario-title" style="color:var(--text);font-size:16px;margin:0 0 20px;text-align:center">Novo Usuário</h3>
+      <form id="form-usuario" autocomplete="off">
+        <div style="margin-bottom:10px">
+          <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Login</label>
+          <input type="text" id="usu-login" placeholder="ex: joao.silva" required style="width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;box-sizing:border-box;outline:none" />
+        </div>
+        <div style="margin-bottom:10px">
+          <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Nome Completo</label>
+          <input type="text" id="usu-nome" placeholder="Nome do usuário" required style="width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;box-sizing:border-box;outline:none" />
+        </div>
+        <div style="margin-bottom:10px">
+          <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Email</label>
+          <input type="email" id="usu-email" placeholder="email@empresa.com" style="width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;box-sizing:border-box;outline:none" />
+        </div>
+        <div style="margin-bottom:10px">
+          <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Senha</label>
+          <input type="password" id="usu-senha" placeholder="Mínimo 6 caracteres" minlength="6" style="width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;box-sizing:border-box;outline:none" />
+          <span id="usu-senha-hint" style="font-size:10px;color:var(--muted);display:none">Deixe em branco para manter a senha atual</span>
+        </div>
+        <div style="margin-bottom:10px">
+          <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Alçada</label>
+          <select id="usu-alcada" required style="width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;box-sizing:border-box;outline:none">
+            <option value="gestor">Gestor</option>
+            <option value="validador">Validador</option>
+            <option value="diretor">Diretor</option>
+            <option value="admin">Administrador</option>
+          </select>
+        </div>
+        <div style="margin-bottom:14px">
+          <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Centros de Custo</label>
+          <input type="text" id="usu-centros" placeholder="* para todos, ou separar por vírgula" value="*" style="width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;box-sizing:border-box;outline:none" />
+        </div>
+        <input type="hidden" id="usu-edit-login" value="" />
+        <div style="display:flex;gap:8px">
+          <button type="button" id="btn-cancel-usuario" style="flex:1;padding:10px;background:var(--bg3);color:var(--muted);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;font-family:var(--font)">Cancelar</button>
+          <button type="submit" id="btn-save-usuario" style="flex:1;padding:10px;background:linear-gradient(135deg,#4f8ef7,#7c5ef7);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;font-family:var(--font)">Salvar</button>
+        </div>
+        <p id="usu-error" style="color:var(--red);font-size:12px;margin:10px 0 0;display:none"></p>
+        <p id="usu-success" style="color:var(--green);font-size:12px;margin:10px 0 0;display:none"></p>
+      </form>
+    </div>
+  </div>
   <!-- ================================================================
        LOGIN SCREEN
        ================================================================ -->
@@ -786,12 +948,153 @@ h<!DOCTYPE html>
           style="width:100%;padding:12px;background:linear-gradient(135deg,#4f8ef7,#7c5ef7);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font)">
           Entrar
         </button>
+        <div style="margin-top:12px">
+          <a href="#" id="link-forgot-pwd" style="color:var(--accent);font-size:12px;text-decoration:none;opacity:.8">Esqueci minha senha</a>
+        </div>
         <p id="login-error" style="color:var(--red);font-size:12px;margin:12px 0 0;display:none"></p>
       </form>
     </div>
   </div>
 
-  <!-- App Entry Point -->
+  
+  <!-- User Management Script -->
+  <script>
+  (function() {
+    var modalUsuario = document.getElementById('modal-usuario');
+    var btnNovoUsuario = document.getElementById('btn-novo-usuario');
+    var cancelUsuario = document.getElementById('btn-cancel-usuario');
+    var formUsuario = document.getElementById('form-usuario');
+
+    function getTkn() {
+      var s = 'pfo_';
+      return window[atob('bG9jYWxTdG9yYWdl')].getItem(s + 'token');
+    }
+
+    async function loadUsuarios() {
+      var tbody = document.getElementById('usuarios-tbody');
+      if (!tbody) return;
+      try {
+        var res = await fetch('/api/usuarios', {
+          headers: { 'Authorization': 'Bearer ' + getTkn() }
+        });
+        var data = await res.json();
+        if (!res.ok) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">' + (data.error || 'Erro') + '</td></tr>'; return; }
+        var users = data.usuarios || [];
+        if (users.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Nenhum usuario cadastrado.</td></tr>'; return; }
+        window.__usersCache = users;
+        tbody.innerHTML = users.map(function(u) {
+          var sb = u.ativo !== false ? '<span class="badge aprovado">Ativo</span>' : '<span class="badge reprovado">Inativo</span>';
+          return '<tr>' +
+            '<td class="td-mono">' + u.login + '</td>' +
+            '<td>' + (u.nome || '-') + '</td>' +
+            '<td style="font-size:12px;color:var(--muted)">' + (u.email || '-') + '</td>' +
+            '<td><span class="badge info">' + (u.alcada || '-') + '</span></td>' +
+            '<td>' + sb + '</td>' +
+            '<td><button class="btn secondary btn-sm btn-edit-usu" data-login="' + u.login + '">Editar</button></td>' +
+            '</tr>';
+        }).join('');
+        tbody.querySelectorAll('.btn-edit-usu').forEach(function(btn) {
+          btn.addEventListener('click', function() { openEditUsuario(btn.dataset.login); });
+        });
+      } catch(err) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--red);padding:20px">Erro: ' + err.message + '</td></tr>';
+      }
+    }
+
+    function openNewUsuario() {
+      document.getElementById('modal-usuario-title').textContent = 'Novo Usuario';
+      document.getElementById('usu-login').value = '';
+      document.getElementById('usu-login').disabled = false;
+      document.getElementById('usu-nome').value = '';
+      document.getElementById('usu-email').value = '';
+      document.getElementById('usu-senha').value = '';
+      document.getElementById('usu-senha').required = true;
+      document.getElementById('usu-senha-hint').style.display = 'none';
+      document.getElementById('usu-alcada').value = 'gestor';
+      document.getElementById('usu-centros').value = '*';
+      document.getElementById('usu-edit-login').value = '';
+      document.getElementById('usu-error').style.display = 'none';
+      document.getElementById('usu-success').style.display = 'none';
+      modalUsuario.style.display = 'flex';
+    }
+
+    function openEditUsuario(login) {
+      var users = window.__usersCache || [];
+      var user = users.find(function(u) { return u.login === login; });
+      if (!user) return;
+      document.getElementById('modal-usuario-title').textContent = 'Editar Usuario';
+      document.getElementById('usu-login').value = user.login;
+      document.getElementById('usu-login').disabled = true;
+      document.getElementById('usu-nome').value = user.nome || '';
+      document.getElementById('usu-email').value = user.email || '';
+      document.getElementById('usu-senha').value = '';
+      document.getElementById('usu-senha').required = false;
+      document.getElementById('usu-senha-hint').style.display = 'block';
+      document.getElementById('usu-alcada').value = user.alcada || 'gestor';
+      var cc = Array.isArray(user.centros_custo) ? user.centros_custo.join(',') : (user.centros_custo || '*');
+      document.getElementById('usu-centros').value = cc;
+      document.getElementById('usu-edit-login').value = login;
+      document.getElementById('usu-error').style.display = 'none';
+      document.getElementById('usu-success').style.display = 'none';
+      modalUsuario.style.display = 'flex';
+    }
+
+    if (btnNovoUsuario) btnNovoUsuario.addEventListener('click', openNewUsuario);
+    if (cancelUsuario && modalUsuario) {
+      cancelUsuario.addEventListener('click', function() { modalUsuario.style.display = 'none'; });
+    }
+    if (modalUsuario) {
+      modalUsuario.addEventListener('click', function(e) { if (e.target === modalUsuario) modalUsuario.style.display = 'none'; });
+    }
+
+    if (formUsuario) {
+      formUsuario.addEventListener('submit', async function(evt) {
+        evt.preventDefault();
+        var errEl = document.getElementById('usu-error');
+        var sucEl = document.getElementById('usu-success');
+        errEl.style.display = 'none';
+        sucEl.style.display = 'none';
+        var editLogin = document.getElementById('usu-edit-login').value;
+        var isEdit = !!editLogin;
+        var payload = {
+          login: isEdit ? editLogin : document.getElementById('usu-login').value.trim(),
+          nome: document.getElementById('usu-nome').value.trim(),
+          email: document.getElementById('usu-email').value.trim(),
+          alcada: document.getElementById('usu-alcada').value,
+          centros_custo: document.getElementById('usu-centros').value.trim().split(',').map(function(s){return s.trim();}),
+          ativo: true
+        };
+        var senhaVal = document.getElementById('usu-senha').value;
+        if (senhaVal) payload.senha = senhaVal;
+        else if (!isEdit) { errEl.textContent = 'Senha obrigatoria para novo usuario.'; errEl.style.display = 'block'; return; }
+        try {
+          var res = await fetch('/api/usuarios', {
+            method: isEdit ? 'PUT' : 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getTkn() },
+            body: JSON.stringify(payload)
+          });
+          var data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Erro ao salvar');
+          sucEl.textContent = isEdit ? 'Usuario atualizado!' : 'Usuario criado!';
+          sucEl.style.display = 'block';
+          setTimeout(function() { modalUsuario.style.display = 'none'; loadUsuarios(); }, 1500);
+        } catch(err) {
+          errEl.textContent = err.message;
+          errEl.style.display = 'block';
+        }
+      });
+    }
+
+    // Auto-load when navigating to usuarios page
+    document.querySelectorAll('.nav-item[data-page]').forEach(function(item) {
+      item.addEventListener('click', function() {
+        if (item.dataset.page === 'usuarios') setTimeout(loadUsuarios, 100);
+      });
+    });
+  })();
+  </script>
+
+<!-- App Entry Point -->
   <script type="module" src="assets/js/app.js"></script>
 </body>
 </html>
