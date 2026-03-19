@@ -14,6 +14,7 @@ const PAGE_TITLES = {
   centros: 'Centros de Custo',
   agente: 'Agente IA',
   relatorios: 'Relatórios',
+    usuarios: 'Gestão de Usuários',
 };
 
 let _currentPage = 'dashboard';
