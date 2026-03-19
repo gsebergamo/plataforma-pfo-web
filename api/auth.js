@@ -1,91 +1,104 @@
 const crypto = require('crypto');
 
+const TOKEN_SECRET = process.env.TOKEN_SECRET || 'pfo-platform-2026-secret';
+const TOKEN_EXPIRY_MS = 24 * 60 * 60 * 1000; // 24h
+
 /**
- * POST /api/auth
- * Validates user credentials and returns a JWT-like token.
- *
- * Body: { usuario: string, senha: string }
- * Response: { token: string, usuario: { nome, perfil } }
- *
- * Credentials are checked against PFO_USERS env var (JSON) or a default list.
+ * Usuarios padrao — identicos ao app.py do Streamlit.
+ * PFO_USERS env var (JSON) pode adicionar/sobrescrever.
  */
-module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Método não permitido. Use POST.' });
-  }
-
-  try {
-    const { usuario, senha } = req.body || {};
-
-    if (!usuario || !senha) {
-      return res.status(400).json({ error: 'Campos "usuario" e "senha" são obrigatórios.' });
-    }
-
-    const users = getUsers();
-    const user = users.find(
-      (u) => u.usuario.toLowerCase() === usuario.toLowerCase() && u.senha === senha
-    );
-
-    if (!user) {
-      console.log('[auth] Login failed for:', usuario);
-      return res.status(401).json({ error: 'Credenciais inválidas.' });
-    }
-
-    const token = generateToken(user);
-
-    console.log('[auth] Login OK:', usuario, '| perfil:', user.perfil);
-
-    return res.status(200).json({
-      token,
-      usuario: {
-        nome: user.nome,
-        perfil: user.perfil,
-      },
-    });
-  } catch (e) {
-    console.error('[auth] Error:', e.message);
-    return res.status(500).json({ error: 'Erro interno na autenticação.' });
-  }
+const USUARIOS_DEFAULT = {
+    'paulo.bergamo': { senha: 'gse2025!', nome: 'Paulo Bergamo', alcada: 'admin', centros_custo: ['*'] },
+    'validador':     { senha: 'valid2025!', nome: 'Validador GSE', alcada: 'validador', centros_custo: ['*'] },
+    'gestor':        { senha: 'gestor2025!', nome: 'Gestor GSE', alcada: 'gestor', centros_custo: ['*'] },
+    'dir.comercial': { senha: 'dir2025!', nome: 'Joao Fernandes', alcada: 'diretor', centros_custo: ['*'] },
+    'dir.tecnico':   { senha: 'dir2025!', nome: 'Ricardo Lima', alcada: 'diretor', centros_custo: ['*'] },
+    'dir.financeiro':{ senha: 'dir2025!', nome: 'Maria Santos', alcada: 'diretor', centros_custo: ['*'] },
 };
 
-/**
- * Load users from PFO_USERS env var or use defaults.
- */
-function getUsers() {
-  if (process.env.PFO_USERS) {
-    try {
-      return JSON.parse(process.env.PFO_USERS);
-    } catch (e) {
-      console.error('[auth] PFO_USERS env var is not valid JSON, using defaults');
+function getUsuarios() {
+    const merged = {};
+    for (const [u, info] of Object.entries(USUARIOS_DEFAULT)) {
+          merged[u] = { ...info };
     }
-  }
+    if (process.env.PFO_USERS) {
+          try {
+                  const salvos = JSON.parse(process.env.PFO_USERS);
+                  for (const [u, info] of Object.entries(salvos)) {
+                            if (merged[u]) Object.assign(merged[u], info);
+                            else merged[u] = { ...info };
+                  }
+          } catch (e) { console.error('[auth] PFO_USERS parse error:', e.message); }
+    }
+    return merged;
+}
 
-  return [
-    { usuario: 'admin', senha: 'gse2025', nome: 'Administrador', perfil: 'admin' },
-    { usuario: 'paulo.bergamo', senha: 'gse2025', nome: 'Paulo Bergamo', perfil: 'diretor' },
-    { usuario: 'diretor', senha: 'gse2025', nome: 'Diretor GSE', perfil: 'diretor' },
-    { usuario: 'backoffice', senha: 'gse2025', nome: 'Backoffice GSE', perfil: 'backoffice' },
-  ];
+function criarToken(usuario, nome, alcada, centros_custo) {
+    const payload = { usuario, nome, alcada, centros_custo, exp: Date.now() + TOKEN_EXPIRY_MS };
+    const data = Buffer.from(JSON.stringify(payload)).toString('base64url');
+    const sig = crypto.createHmac('sha256', TOKEN_SECRET).update(data).digest('base64url');
+    return data + '.' + sig;
+}
+
+function validarToken(token) {
+    try {
+          const parts = token.split('.');
+          if (parts.length !== 2) return null;
+          const [data, sig] = parts;
+          const expected = crypto.createHmac('sha256', TOKEN_SECRET).update(data).digest('base64url');
+          if (sig !== expected) return null;
+          const payload = JSON.parse(Buffer.from(data, 'base64url').toString());
+          if (payload.exp < Date.now()) return null;
+          return payload;
+    } catch { return null; }
 }
 
 /**
- * Generate a simple signed token.
+ * POST /api/auth — Login
+ * Body: { usuario: string, senha: string }
+ * Retorna: { token, usuario, nome, alcada, centros_custo }
  */
-function generateToken(user) {
-  const payload = {
-    sub: user.usuario,
-    nome: user.nome,
-    perfil: user.perfil,
-    iat: Date.now(),
-    exp: Date.now() + 24 * 60 * 60 * 1000, // 24h
-  };
-  const data = Buffer.from(JSON.stringify(payload)).toString('base64url');
-  const secret = process.env.PFO_SECRET || 'pfo-gse-default-secret';
-  const sig = crypto.createHmac('sha256', secret).update(data).digest('base64url');
-  return data + '.' + sig;
-}
+module.exports = async function handler(req, res) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    if (req.method === 'OPTIONS') return res.status(200).end();
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+    try {
+          const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+          const { usuario, senha } = body || {};
+
+      if (!usuario || !senha) {
+              return res.status(400).json({ error: 'Usuario e senha sao obrigatorios.' });
+      }
+
+      const usuarios = getUsuarios();
+          const user = usuarios[usuario.toLowerCase()];
+
+      if (!user || user.senha !== senha) {
+              console.log('[auth] Login failed for:', usuario);
+              return res.status(401).json({ error: 'Usuario ou senha incorretos.' });
+      }
+
+      const token = criarToken(usuario.toLowerCase(), user.nome, user.alcada, user.centros_custo || ['*']);
+          console.log('[auth] Login OK:', usuario, '| alcada:', user.alcada);
+
+      return res.status(200).json({
+              token,
+              usuario: usuario.toLowerCase(),
+              nome: user.nome,
+              alcada: user.alcada,
+              centros_custo: user.centros_custo || ['*'],
+      });
+    } catch (e) {
+          console.error('[auth] Error:', e.message);
+          return res.status(500).json({ error: 'Erro interno na autenticacao.' });
+    }
+};
+
+// Exports para uso em outros endpoints (senha.js, dados.js)
+module.exports.validarToken = validarToken;
+module.exports.getUsuarios = getUsuarios;
+module.exports.criarToken = criarToken;
+module.exports.USUARIOS_DEFAULT = USUARIOS_DEFAULT;
