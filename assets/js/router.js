@@ -64,6 +64,17 @@ export function navigateTo(pageName, updateHash = true) {
     page.classList.add('fade-in');
   }
 
+  // Show/hide dashboard extra sections (siblings between page-dashboard and page-ciclos in main)
+  const mainEl = document.querySelector('.main');
+  if (mainEl) {
+    const children = Array.from(mainEl.children);
+    const dashIdx = children.findIndex(c => c.id === 'page-dashboard');
+    const ciclosIdx = children.findIndex(c => c.id === 'page-ciclos');
+    for (let i = dashIdx + 1; i < ciclosIdx; i++) {
+      children[i].style.display = pageName === 'dashboard' ? '' : 'none';
+    }
+  }
+
   // Update nav active state
   document.querySelectorAll('.nav-item').forEach((item) => {
     const onclick = item.dataset.page;
