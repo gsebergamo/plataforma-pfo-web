@@ -1434,3 +1434,133 @@ tbody tr:last-child td {
   from { opacity: 1; }
   to { opacity: 0; }
 }
+
+
+/* ============================================================
+   DASHBOARD EXECUTIVO 2026 — Novos componentes
+   ============================================================ */
+
+/* KPI Grid 2026 */
+.kpi2-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.kpi2-card:hover {
+  border-color: rgba(79,142,247,.4);
+  box-shadow: 0 4px 20px rgba(79,142,247,.1);
+}
+.kpi2-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.kpi2-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  font-family: var(--mono);
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+.kpi2-big {
+  font-size: 26px;
+}
+.kpi2-sub {
+  font-size: 10px;
+  color: var(--muted);
+  font-family: var(--mono);
+}
+
+/* Home navigation cards */
+.home-nav-card:active {
+  transform: scale(.97) !important;
+}
+
+/* Bar value label above bars */
+.bar-value {
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--muted);
+  text-align: center;
+  margin-bottom: 2px;
+}
+
+/* Tabela detalhada row hover */
+#tabela-tbody tr:hover td,
+#ranking-tbody tr:hover td {
+  background: rgba(79,142,247,.04);
+}
+
+/* Skeleton shimmer */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg2) 25%, var(--bg3) 50%, var(--bg2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Badge info */
+.badge.info {
+  background: rgba(79,142,247,.15);
+  color: #60a5fa;
+  border: 1px solid rgba(79,142,247,.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .kpi2-value { font-size: 16px; }
+  .kpi2-big { font-size: 20px; }
+}
+
+
+/* ── KPI Grid 2026 — subdivisão de despesa ─────────────────────────────────── */
+.kpi2-card-despesa {
+  grid-column: span 2;
+}
+.kpi2-sub-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--muted);
+  align-items: center;
+}
+.kpi2-sub-item strong {
+  color: #e5e7eb;
+  font-weight: 600;
+}
+.kpi2-sub-sep {
+  color: #374151;
+}
+.kpi2-nao-op strong {
+  color: #fbbf24;   /* âmbar — despesa não operacional */
+}
+.kpi2-nao-op::before {
+  content: '⚠ ';
+  color: #fbbf24;
+}
+.kpi2-obra strong {
+  color: #a78bfa;   /* violeta — obra/investimento */
+}
+.kpi2-obra::before {
+  content: '🏗 ';
+}
+
+.kpi2-backoffice strong {
+  color: #34d399;   /* verde — custo backoffice interno */
+}
+.kpi2-backoffice::before {
+  content: '⚙ ';
+  color: #34d399;
+}

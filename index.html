@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+h<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Plataforma PFO — Dashboard Financeiro Executivo — Global Service Engenharia">
-  <meta name="theme-color" content="#0a0c10">
+  <meta name="theme-color" content="#0a0c10">h
   <title>Plataforma PFO — GSE</title>
 
   <!-- Fonts -->
@@ -28,16 +28,7 @@
     <div class="sidebar-logo">
       <!-- Logo GSE -->
       <div class="logo-mark">
-        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-          <rect width="36" height="36" rx="8" fill="url(#logo-grad)"/>
-          <text x="18" y="23" text-anchor="middle" font-family="'DM Sans', sans-serif" font-weight="700" font-size="16" fill="white">GS</text>
-          <defs>
-            <linearGradient id="logo-grad" x1="0" y1="0" x2="36" y2="36">
-              <stop stop-color="#4f8ef7"/>
-              <stop offset="1" stop-color="#7c5ef7"/>
-            </linearGradient>
-          </defs>
-        </svg>
+        <img src="assets/logo-gse.png" alt="Global Service Engenharia" style="width:48px;height:48px;object-fit:contain;">
       </div>
       <div class="company">Global Service<br>Engenharia</div>
       <div class="sub">Plataforma PFO</div>
@@ -72,14 +63,23 @@
       <div class="nav-item" data-page="relatorios">
         <span class="nav-icon">▤</span> Relatórios
       </div>
+
+      <div class="nav-sec nav-admin-only" style="display:none">Administração</div>
+      <div class="nav-item nav-admin-only" data-page="usuarios" style="display:none">
+        <span class="nav-icon">👥</span> Gestão de Usuários
+      </div>
     </nav>
 
     <div class="sidebar-footer">
       <div class="user-info">
-        <div class="avatar" id="user-avatar">PB</div>
-        <div>
-          <div class="user-name" id="user-name">Paulo Bergamo</div>
-          <div class="user-role" id="user-role">DIRETOR</div>
+        <div class="avatar" id="user-avatar">--</div>
+        <div style="flex:1">
+          <div class="user-name" id="user-name">—</div>
+          <div class="user-role" id="user-role">—</div>
+        </div>
+        <div style="display:flex;gap:4px">
+          <button id="btn-change-pwd" title="Alterar senha" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);padding:4px 8px;cursor:pointer;font-size:11px">🔑</button>
+          <button id="btn-logout" title="Sair" style="background:none;border:1px solid rgba(248,113,113,.5);border-radius:6px;color:rgba(248,113,113,.7);padding:4px 8px;cursor:pointer;font-size:11px">⏻</button>
         </div>
       </div>
     </div>
@@ -99,7 +99,6 @@
           <div class="dot pulse"></div>
           <span id="status-text">Carregando...</span>
         </div>
-        <a href="https://plataforma-pfo-ghjcxccztnvn2yatcnsfr4.streamlit.app" target="_blank" class="btn secondary btn-sm">↗ App completo</a>
       </div>
     </header>
 
@@ -250,7 +249,141 @@
       </div>
     </div>
 
+    
     <!-- ============================================================
+         DASHBOARD EXECUTIVO 2026 — SEÇÕES ADICIONAIS
+         ============================================================ -->
+
+    <!-- HOME PAGE — Cards de navegação rápida -->
+    <div id="home-nav-cards" style="margin-bottom:20px">
+      <div style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px">Acesso Rápido</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px">
+        <div class="home-nav-card" data-page="dashboard" style="cursor:pointer;background:linear-gradient(135deg,rgba(79,142,247,.12),rgba(124,94,247,.12));border:1px solid rgba(79,142,247,.25);border-radius:10px;padding:14px;transition:all .2s;user-select:none" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(79,142,247,.2)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+          <div style="font-size:20px;margin-bottom:6px">📊</div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">Dashboard</div>
+          <div style="font-size:10px;color:var(--muted)">Visão executiva</div>
+        </div>
+        <div class="home-nav-card" data-page="ciclos" style="cursor:pointer;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:14px;transition:all .2s;user-select:none" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(16,185,129,.15)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+          <div style="font-size:20px;margin-bottom:6px">◷</div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">Status PFOs</div>
+          <div style="font-size:10px;color:var(--muted)">Ciclos &amp; governança</div>
+        </div>
+        <div class="home-nav-card" data-page="upload" style="cursor:pointer;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:14px;transition:all .2s;user-select:none" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(245,158,11,.15)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+          <div style="font-size:20px;margin-bottom:6px">↑</div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">Upload PFO</div>
+          <div style="font-size:10px;color:var(--muted)">Enviar arquivo</div>
+        </div>
+        <div class="home-nav-card" data-page="aprovacoes" style="cursor:pointer;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:10px;padding:14px;transition:all .2s;user-select:none" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(248,113,113,.15)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+          <div style="font-size:20px;margin-bottom:6px">✓</div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">Aprovações</div>
+          <div style="font-size:10px;color:var(--muted)">Fila de aprovação</div>
+        </div>
+        <div class="home-nav-card" data-page="centros" style="cursor:pointer;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);border-radius:10px;padding:14px;transition:all .2s;user-select:none" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(139,92,246,.15)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+          <div style="font-size:20px;margin-bottom:6px">⊞</div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">Centros</div>
+          <div style="font-size:10px;color:var(--muted)">Centros de custo</div>
+        </div>
+        <div class="home-nav-card" data-page="relatorios" style="cursor:pointer;background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.2);border-radius:10px;padding:14px;transition:all .2s;user-select:none" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(251,146,60,.15)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+          <div style="font-size:20px;margin-bottom:6px">▤</div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">Relatórios</div>
+          <div style="font-size:10px;color:var(--muted)">Exportar dados</div>
+        </div>
+        <div class="home-nav-card" data-page="agente" style="cursor:pointer;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:10px;padding:14px;transition:all .2s;user-select:none" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(99,102,241,.15)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+          <div style="font-size:20px;margin-bottom:6px">◉</div>
+          <div style="font-size:12px;font-weight:600;color:var(--text)">Agente IA</div>
+          <div style="font-size:10px;color:var(--muted)">Análise inteligente</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Grid 2026 -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="section-header" style="margin-bottom:14px">
+        <div class="section-title">Visão Consolidada 2026</div>
+        <span class="badge info" style="font-size:10px">Competência: Jan–Dez/2026</span>
+      </div>
+      <div id="kpi-grid-2026" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px">
+        <div class="skeleton" style="height:80px;border-radius:8px"></div>
+        <div class="skeleton" style="height:80px;border-radius:8px"></div>
+        <div class="skeleton" style="height:80px;border-radius:8px"></div>
+        <div class="skeleton" style="height:80px;border-radius:8px"></div>
+        <div class="skeleton" style="height:80px;border-radius:8px"></div>
+        <div class="skeleton" style="height:80px;border-radius:8px"></div>
+        <div class="skeleton" style="height:80px;border-radius:8px"></div>
+      </div>
+    </div>
+
+    <!-- Curvas acumuladas -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="section-header" style="margin-bottom:14px">
+        <div class="section-title">Evolução Acumulada 2026</div>
+        <span style="font-size:11px;color:var(--muted)">Realizado → Planejado</span>
+      </div>
+      <div id="chart-curvas" style="width:100%;min-height:240px">
+        <div class="loading-overlay" style="height:200px;display:flex;align-items:center;justify-content:center">
+          <div class="spinner"></div> Carregando curvas...
+        </div>
+      </div>
+    </div>
+
+    <!-- Ranking de projetos -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="section-header">
+        <div class="section-title">Ranking de Projetos — Receita 2026</div>
+        <span style="font-size:11px;color:var(--muted)">Top 10 por receita projetada</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Projeto</th>
+              <th>Contrato</th>
+              <th>Receita</th>
+              <th>Resultado</th>
+              <th>Margem</th>
+            </tr>
+          </thead>
+          <tbody id="ranking-tbody">
+            <tr><td colspan="6" class="td-muted" style="text-align:center;padding:20px">
+              <div class="loading-overlay"><div class="spinner"></div> Carregando...</div>
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tabela detalhada completa -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="section-header">
+        <div class="section-title">DRE Detalhada — Todos os Projetos 2026</div>
+        <span style="font-size:11px;color:var(--muted)">DESPESA = Custo + Cliente · MARGEM = Resultado / Contrato</span>
+      </div>
+      <div class="table-wrap" style="overflow-x:auto">
+        <table style="min-width:800px">
+          <thead>
+            <tr>
+              <th>Projeto</th>
+              <th>Contrato</th>
+              <th>Receita</th>
+              <th>Impostos</th>
+              <th>Custo</th>
+              <th>Cliente</th>
+              <th>Despesa</th>
+              <th>Resultado</th>
+              <th>Margem</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-tbody">
+            <tr><td colspan="10" class="td-muted" style="text-align:center;padding:20px">
+              <div class="loading-overlay"><div class="spinner"></div> Carregando...</div>
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+<!-- ============================================================
          PAGE: Ciclos & Governança
          ============================================================ -->
     <div class="page fade-in" id="page-ciclos">
@@ -528,238 +661,282 @@
         </div>
       </div>
     </div>
-  </main>
+  
+
+    <!-- ============================================================
+         PAGE: Gestão de Usuários (Admin Only)
+    ============================================================ -->
+    <div class="page fade-in" id="page-usuarios">
+      <div class="section-header">
+        <div class="section-title" style="font-size:16px">Gestão de Usuários</div>
+        <button class="btn btn-sm" id="btn-novo-usuario">+ Novo Usuário</button>
+      </div>
+      <div class="card">
+        <div class="section-header">
+          <div class="section-title">Usuários Cadastrados</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Login</th><th>Nome</th><th>Email</th><th>Alçada</th><th>Status</th><th>Ações</th></tr>
+            </thead>
+            <tbody id="usuarios-tbody">
+              <tr><td colspan="6" class="td-muted" style="text-align:center;padding:20px">
+                <div class="loading-overlay"><div class="spinner"></div> Carregando...</div>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+</main>
 
   <!-- Auth + Data Bootstrap -->
   <script>
     (function () {
-      /**
-       * checkAuth — verifica se há token salvo e esconde a tela de login.
-       * NÃO remove o elemento do DOM, apenas esconde via display:none.
-       */
       function checkAuth() {
         var token = localStorage.getItem('pfo_token');
         if (token) {
-          document.getElementById('login-screen').style.display = 'none';
-          _carregarDadosReais(token);
-        } else {
-          document.getElementById('login-screen').style.display = 'flex';
-        }
-      }
-
-      /**
-       * _carregarDadosReais — chama /api/dados com o token do localStorage
-       * e popula o dashboard com os dados reais (22 PFOs no backend).
-       */
-      async function _carregarDadosReais(token) {
-        try {
-          var res = await fetch('/api/dados', {
-            headers: {
-              'Authorization': 'Bearer ' + token,
-              'Content-Type': 'application/json'
-            }
-          });
-          if (!res.ok) throw new Error('Erro HTTP ' + res.status);
-          var data = await res.json();
-
-          // Expose data for app.js to reuse (avoids duplicate fetch)
-          window.__PFO_BOOTSTRAP_DATA = data;
-          window.__PFO_BOOTSTRAP_TIME = Date.now();
-
-          var pfos = data.pfos || [];
-          var ccs = data.centros_custo || {};
-          var apr = data.aprovacoes || {};
-
-          // KPIs
-          var rec = 0, cst = 0, a = 0, e = 0, p = 0, r = 0;
-          pfos.forEach(function (pfo) {
-            rec += ((pfo.dre && pfo.dre.receita && pfo.dre.receita.projetado) || 0) * 1000;
-            cst += ((pfo.dre && pfo.dre.custo && pfo.dre.custo.projetado) || 0) * 1000;
-            var st = _getStatus(pfo, apr);
-            if (st === 'aprovado') a++;
-            else if (st === 'enviado') e++;
-            else if (st === 'reprovado') r++;
-            else p++;
-          });
-
-          var resultado = rec - cst;
-          var margem = rec > 0 ? (resultado / rec) * 100 : 0;
-          var tot = a + e + p + r || 1;
-
-          _setText('kpi-rec', _fmtNum(rec / 1000));
-          _setText('kpi-rec-sub', 'resultado: R$ ' + _fmtNum(resultado / 1000) + 'k');
-          _setText('kpi-mar', margem.toFixed(1));
-          _setText('kpi-pfo', pfos.length);
-          _setText('kpi-pfo-sub', Object.keys(ccs).length + ' centros ativos');
-          _setText('kpi-pen', p + r);
-          _setText('badge-p', p + r);
-          _setText('cycle-label', 'Ciclo: ' + pfos.length + ' PFOs');
-
-          // Score ring
-          var sc = Math.round((a / tot) * 100);
-          _setText('score-n', sc);
-          var ci = document.getElementById('score-c');
-          if (ci) {
-            var circumference = 276.5;
-            setTimeout(function () {
-              ci.style.strokeDashoffset = circumference - (circumference * sc) / 100;
-            }, 100);
-            var col = sc >= 80 ? 'var(--green)' : sc >= 50 ? 'var(--amber)' : 'var(--red)';
-            ci.style.stroke = col;
-            var ss = document.getElementById('score-s');
-            if (ss) {
-              ss.textContent = sc >= 80 ? '✓ Saudável' : sc >= 50 ? '⚠ Atenção' : '✗ Crítico';
-              ss.style.color = col;
-            }
-          }
-
-          // Progress bars
-          var pct = function (n) { return Math.round((n / tot) * 100); };
-          _setText('pr-apr', a + ' (' + pct(a) + '%)');
-          _setText('pr-env', e + ' (' + pct(e) + '%)');
-          _setText('pr-pen', p + ' (' + pct(p) + '%)');
-          _setText('pr-rep', r + ' (' + pct(r) + '%)');
-          setTimeout(function () {
-            _setWidth('pf-apr', pct(a) + '%');
-            _setWidth('pf-env', pct(e) + '%');
-            _setWidth('pf-pen', pct(p) + '%');
-            _setWidth('pf-rep', pct(r) + '%');
-          }, 200);
-
-          // Stats
-          _setText('st-apr', a);
-          _setText('st-env', e);
-          _setText('st-pen', p);
-          _setText('st-rep', r);
-
-          // Approval KPIs
-          _setText('ap-apr', a);
-          _setText('ap-env', e);
-          _setText('ap-rep', r);
-
-          // Status pill
-          var pill = document.getElementById('status-pill');
-          var stxt = document.getElementById('status-text');
-          if (pill && stxt) {
-            if (r > 0) {
-              pill.className = 'status-pill warn';
-              stxt.textContent = 'Atenção requerida';
-            } else if (sc >= 70) {
-              pill.className = 'status-pill ok';
-              stxt.textContent = 'Ciclo saudável';
-            } else {
-              pill.className = 'status-pill warn';
-              stxt.textContent = 'Ciclo em andamento';
-            }
-          }
-
-          console.log('[Auth] Dados reais carregados: ' + pfos.length + ' PFOs, ' + Object.keys(ccs).length + ' centros');
-        } catch (err) {
-          console.error('[Auth] Erro ao carregar dados reais:', err);
-          var pill = document.getElementById('status-pill');
-          var stxt = document.getElementById('status-text');
-          if (pill) pill.className = 'status-pill crit';
-          if (stxt) stxt.textContent = 'Erro ao carregar';
-        }
-      }
-
-      function _getStatus(pfo, apr) {
-        var key = pfo.cc_codigo || pfo.arquivo || '';
-        if (apr[key]) return apr[key].status || 'pendente';
-        return 'pendente';
-      }
-
-      function _fmtNum(n) {
-        return Number(n).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-      }
-
-      function _setText(id, val) {
-        var el = document.getElementById(id);
-        if (el) el.textContent = val;
-      }
-
-      function _setWidth(id, val) {
-        var el = document.getElementById(id);
-        if (el) el.style.width = val;
-      }
-
-      // Login form handler
-      document.addEventListener('DOMContentLoaded', function () {
-        // Check existing auth on load
-        checkAuth();
-
-        var form = document.getElementById('login-form');
-        async function loginExec(evt) {
-          evt.preventDefault();
-          var btn = document.getElementById('login-btn');
-          var errEl = document.getElementById('login-error');
-          var user = document.getElementById('login-user').value.trim();
-          var pass = document.getElementById('login-pass').value;
-
-          btn.disabled = true;
-          btn.textContent = 'Entrando...';
-          if (errEl) errEl.style.display = 'none';
-
           try {
-            var res = await fetch('/api/auth', {
+            var parts = token.split('.');
+            var payload = JSON.parse(atob(parts[0].replace(/-/g, '+').replace(/_/g, '/')));
+            if (payload.exp && payload.exp > Date.now()) {
+              document.getElementById('login-screen').style.display = 'none';
+              var user = JSON.parse(localStorage.getItem('pfo_user') || '{}');
+              if (user.name) {
+                var nameEl = document.getElementById('user-name');
+                var roleEl = document.getElementById('user-role');
+                var avatarEl = document.getElementById('user-avatar');
+                if (nameEl) nameEl.textContent = user.name;
+                if (roleEl) roleEl.textContent = user.role || '';
+                if (avatarEl) avatarEl.textContent = user.initials || '--';
+              }
+              return;
+            }
+          } catch(e) { console.warn('[Auth] Token error:', e); }
+          localStorage.removeItem('pfo_token');
+          localStorage.removeItem('pfo_user');
+        }
+        document.getElementById('login-screen').style.display = 'flex';
+      }
+      document.addEventListener('DOMContentLoaded', function () {
+        checkAuth();
+        var form = document.getElementById('login-form');
+        if (form) {
+          form.addEventListener('submit', async function (evt) {
+            evt.preventDefault();
+            var btn = document.getElementById('login-btn');
+            var errEl = document.getElementById('login-error');
+            var user = document.getElementById('login-user').value.trim();
+            var pass = document.getElementById('login-pass').value;
+            btn.disabled = true; btn.textContent = 'Entrando...';
+            if (errEl) errEl.style.display = 'none';
+            try {
+              var res = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ usuario: user, senha: pass }) });
+              var data = await res.json();
+              if (!res.ok || !data.token) throw new Error(data.error || 'Credenciais invalidas');
+              localStorage.setItem('pfo_token', data.token);
+              var userObj = { id: data.usuario, name: data.nome, initials: data.nome.split(' ').map(function(n){ return n[0]; }).join('').substring(0,2).toUpperCase(), role: (data.alcada || 'usuario').toUpperCase(), alcada: data.alcada, centros_custo: data.centros_custo || ['*'], email: data.email || '' };
+              localStorage.setItem('pfo_user', JSON.stringify(userObj));
+              document.getElementById('login-screen').style.display = 'none';
+              var nameEl = document.getElementById('user-name');
+              var roleEl = document.getElementById('user-role');
+              var avatarEl = document.getElementById('user-avatar');
+              if (nameEl) nameEl.textContent = userObj.name;
+              if (roleEl) roleEl.textContent = userObj.role;
+              if (avatarEl) avatarEl.textContent = userObj.initials;
+              window.location.reload();
+            } catch (err) {
+              if (errEl) { errEl.textContent = err.message; errEl.style.display = 'block'; }
+            } finally { btn.disabled = false; btn.textContent = 'Entrar'; }
+          });
+        }
+        var logoutBtn = document.getElementById('btn-logout');
+        if (logoutBtn) { logoutBtn.addEventListener('click', function () { localStorage.removeItem('pfo_token'); localStorage.removeItem('pfo_user'); window.location.reload(); }); }
+        var changePwdBtn = document.getElementById('btn-change-pwd');
+        var modal = document.getElementById('modal-senha');
+        var cancelBtn = document.getElementById('btn-cancel-pwd');
+        if (changePwdBtn && modal) { changePwdBtn.addEventListener('click', function () { modal.style.display = 'flex'; }); }
+        if (cancelBtn && modal) { cancelBtn.addEventListener('click', function () { modal.style.display = 'none'; document.getElementById('form-senha').reset(); document.getElementById('pwd-error').style.display = 'none'; document.getElementById('pwd-success').style.display = 'none'; }); }
+        if (modal) { modal.addEventListener('click', function (e) { if (e.target === modal) modal.style.display = 'none'; }); }
+        var formSenha = document.getElementById('form-senha');
+        if (formSenha) {
+          formSenha.addEventListener('submit', async function (evt) {
+            evt.preventDefault();
+            var errEl = document.getElementById('pwd-error');
+            var sucEl = document.getElementById('pwd-success');
+            var nova = document.getElementById('pwd-nova').value;
+            var confirma = document.getElementById('pwd-confirma').value;
+            errEl.style.display = 'none'; sucEl.style.display = 'none';
+            if (nova !== confirma) { errEl.textContent = 'As senhas nao coincidem.'; errEl.style.display = 'block'; return; }
+            try {
+              var token = localStorage.getItem('pfo_token');
+              var res = await fetch('/api/senha', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ senha_atual: document.getElementById('pwd-atual').value, nova_senha: nova }) });
+              var data = await res.json();
+              if (!res.ok) throw new Error(data.error || 'Erro ao alterar senha');
+              sucEl.textContent = 'Senha alterada com sucesso!'; sucEl.style.display = 'block'; formSenha.reset();
+              setTimeout(function () { modal.style.display = 'none'; sucEl.style.display = 'none'; }, 2000);
+            } catch (err) { errEl.textContent = err.message; errEl.style.display = 'block'; }
+          });
+        }
+
+
+      // === FORGOT PWD ===
+      var forgotLink = document.getElementById('link-forgot-pwd');
+      var modalForgot = document.getElementById('modal-forgot');
+      var cancelForgot = document.getElementById('btn-cancel-forgot');
+      if (forgotLink && modalForgot) {
+        forgotLink.addEventListener('click', function(e) {
+          e.preventDefault();
+          modalForgot.style.display = 'flex';
+        });
+      }
+      if (cancelForgot && modalForgot) {
+        cancelForgot.addEventListener('click', function() {
+          modalForgot.style.display = 'none';
+          document.getElementById('form-forgot').reset();
+          document.getElementById('forgot-error').style.display = 'none';
+          document.getElementById('forgot-success').style.display = 'none';
+        });
+      }
+      if (modalForgot) {
+        modalForgot.addEventListener('click', function(e) {
+          if (e.target === modalForgot) modalForgot.style.display = 'none';
+        });
+      }
+      var formForgot = document.getElementById('form-forgot');
+      if (formForgot) {
+        formForgot.addEventListener('submit', async function(evt) {
+          evt.preventDefault();
+          var errEl = document.getElementById('forgot-error');
+          var sucEl = document.getElementById('forgot-success');
+          var btn = document.getElementById('btn-send-forgot');
+          errEl.style.display = 'none';
+          sucEl.style.display = 'none';
+          btn.disabled = true;
+          btn.textContent = 'Enviando...';
+          try {
+            var res = await fetch('/api/recuperar-senha', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ usuario: user, senha: pass })
+              body: JSON.stringify({ usuario: document.getElementById('forgot-user').value.trim() })
             });
-
             var data = await res.json();
-
-            if (!res.ok || !data.token) {
-              throw new Error(data.error || 'Credenciais inválidas');
-            }
-
-            // Salvar token no localStorage com chave 'pfo_token'
-            localStorage.setItem('pfo_token', data.token);
-
-            // Esconder login screen (NÃO remover do DOM)
-            document.getElementById('login-screen').style.display = 'none';
-
-            // Carregar dados reais com o token
-            _carregarDadosReais(data.token);
-
-          } catch (err) {
-            if (errEl) {
-              errEl.textContent = err.message;
-              errEl.style.display = 'block';
-            }
+            sucEl.textContent = data.message || 'Se o usuario tiver email cadastrado, uma senha temporaria foi enviada.';
+            sucEl.style.display = 'block';
+            setTimeout(function() { modalForgot.style.display = 'none'; sucEl.style.display = 'none'; }, 4000);
+          } catch(err) {
+            errEl.textContent = err.message || 'Erro de conexao';
+            errEl.style.display = 'block';
           } finally {
             btn.disabled = false;
-            btn.textContent = 'Entrar';
+            btn.textContent = 'Enviar';
           }
-        }
+        });
+      }
 
-        if (form) {
-          form.addEventListener('submit', loginExec);
-        }
+      // === ADMIN NAV ===
+      (function showAdminNav() {
+        try {
+          var u = JSON.parse(localStorage.getItem('pfo_user') || '{}');
+          if (u.alcada === 'admin') {
+            document.querySelectorAll('.nav-admin-only').forEach(function(el) { el.style.display = ''; });
+          }
+        } catch(e) {}
+      })();
+
       });
-
-      window.loginExec = loginExec;
-      window.checkAuth = checkAuth;
-      window._carregarDadosReais = _carregarDadosReais;
     })();
   </script>
 
+  <!-- MODAL: ALTERAR SENHA -->
+  <div id="modal-senha" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.6);align-items:center;justify-content:center">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:32px;width:100%;max-width:380px;text-align:center">
+      <h3 style="color:var(--text);font-size:16px;margin:0 0 20px">🔑 Alterar Senha</h3>
+      <form id="form-senha" autocomplete="off">
+        <input type="password" id="pwd-atual" placeholder="Senha atual" required style="width:100%;padding:10px 14px;margin-bottom:10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;box-sizing:border-box;outline:none" />
+        <input type="password" id="pwd-nova" placeholder="Nova senha (min. 6 caracteres)" required minlength="6" style="width:100%;padding:10px 14px;margin-bottom:10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;box-sizing:border-box;outline:none" />
+        <input type="password" id="pwd-confirma" placeholder="Confirmar nova senha" required style="width:100%;padding:10px 14px;margin-bottom:14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;box-sizing:border-box;outline:none" />
+        <div style="display:flex;gap:8px">
+          <button type="button" id="btn-cancel-pwd" style="flex:1;padding:10px;background:var(--bg3);color:var(--muted);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;font-family:var(--font)">Cancelar</button>
+          <button type="submit" id="btn-save-pwd" style="flex:1;padding:10px;background:linear-gradient(135deg,#4f8ef7,#7c5ef7);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;font-family:var(--font)">Salvar</button>
+        </div>
+        <p id="pwd-error" style="color:var(--red);font-size:12px;margin:10px 0 0;display:none"></p>
+        <p id="pwd-success" style="color:var(--green);font-size:12px;margin:10px 0 0;display:none"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ESQUECI MINHA SENHA -->
+  <div id="modal-forgot" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.6);align-items:center;justify-content:center">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:32px;width:100%;max-width:380px;text-align:center">
+      <h3 style="color:var(--text);font-size:16px;margin:0 0 8px">Recuperar Senha</h3>
+      <p style="color:var(--muted);font-size:12px;margin:0 0 20px">Informe seu login. Se houver email cadastrado, enviaremos uma senha temporária.</p>
+      <form id="form-forgot" autocomplete="off">
+        <input type="text" id="forgot-user" placeholder="Seu login (ex: paulo.bergamo)" required style="width:100%;padding:10px 14px;margin-bottom:14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;box-sizing:border-box;outline:none" />
+        <div style="display:flex;gap:8px">
+          <button type="button" id="btn-cancel-forgot" style="flex:1;padding:10px;background:var(--bg3);color:var(--muted);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;font-family:var(--font)">Cancelar</button>
+          <button type="submit" id="btn-send-forgot" style="flex:1;padding:10px;background:linear-gradient(135deg,#4f8ef7,#7c5ef7);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;font-family:var(--font)">Enviar</button>
+        </div>
+        <p id="forgot-error" style="color:var(--red);font-size:12px;margin:10px 0 0;display:none"></p>
+        <p id="forgot-success" style="color:var(--green);font-size:12px;margin:10px 0 0;display:none"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: NOVO / EDITAR USUARIO -->
+  <div id="modal-usuario" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.6);align-items:center;justify-content:center">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:32px;width:100%;max-width:440px;text-align:left">
+      <h3 id="modal-usuario-title" style="color:var(--text);font-size:16px;margin:0 0 20px;text-align:center">Novo Usuário</h3>
+      <form id="form-usuario" autocomplete="off">
+        <div style="margin-bottom:10px">
+          <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Login</label>
+          <input type="text" id="usu-login" placeholder="ex: joao.silva" required style="width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;box-sizing:border-box;outline:none" />
+        </div>
+        <div style="margin-bottom:10px">
+          <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Nome Completo</label>
+          <input type="text" id="usu-nome" placeholder="Nome do usuário" required style="width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;box-sizing:border-box;outline:none" />
+        </div>
+        <div style="margin-bottom:10px">
+          <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Email</label>
+          <input type="email" id="usu-email" placeholder="email@empresa.com" style="width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;box-sizing:border-box;outline:none" />
+        </div>
+        <div style="margin-bottom:10px">
+          <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Senha</label>
+          <input type="password" id="usu-senha" placeholder="Mínimo 6 caracteres" minlength="6" style="width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;box-sizing:border-box;outline:none" />
+          <span id="usu-senha-hint" style="font-size:10px;color:var(--muted);display:none">Deixe em branco para manter a senha atual</span>
+        </div>
+        <div style="margin-bottom:10px">
+          <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Alçada</label>
+          <select id="usu-alcada" required style="width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;box-sizing:border-box;outline:none">
+            <option value="gestor">Gestor</option>
+            <option value="validador">Validador</option>
+            <option value="diretor">Diretor</option>
+            <option value="admin">Administrador</option>
+          </select>
+        </div>
+        <div style="margin-bottom:14px">
+          <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Centros de Custo</label>
+          <input type="text" id="usu-centros" placeholder="* para todos, ou separar por vírgula" value="*" style="width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;box-sizing:border-box;outline:none" />
+        </div>
+        <input type="hidden" id="usu-edit-login" value="" />
+        <div style="display:flex;gap:8px">
+          <button type="button" id="btn-cancel-usuario" style="flex:1;padding:10px;background:var(--bg3);color:var(--muted);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;font-family:var(--font)">Cancelar</button>
+          <button type="submit" id="btn-save-usuario" style="flex:1;padding:10px;background:linear-gradient(135deg,#4f8ef7,#7c5ef7);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;font-family:var(--font)">Salvar</button>
+        </div>
+        <p id="usu-error" style="color:var(--red);font-size:12px;margin:10px 0 0;display:none"></p>
+        <p id="usu-success" style="color:var(--green);font-size:12px;margin:10px 0 0;display:none"></p>
+      </form>
+    </div>
+  </div>
   <!-- ================================================================
        LOGIN SCREEN
        ================================================================ -->
   <div class="login-screen" id="login-screen" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center">
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:40px;width:100%;max-width:400px;text-align:center">
       <div style="margin-bottom:24px">
-        <svg width="48" height="48" viewBox="0 0 36 36" fill="none" style="margin-bottom:12px">
-          <rect width="36" height="36" rx="8" fill="url(#login-grad)"/>
-          <text x="18" y="23" text-anchor="middle" font-family="'DM Sans', sans-serif" font-weight="700" font-size="16" fill="white">GS</text>
-          <defs>
-            <linearGradient id="login-grad" x1="0" y1="0" x2="36" y2="36">
-              <stop stop-color="#4f8ef7"/>
-              <stop offset="1" stop-color="#7c5ef7"/>
-            </linearGradient>
-          </defs>
-        </svg>
+        <img src="assets/logo-gse.png" alt="Global Service Engenharia" style="width:160px;margin-bottom:12px;">
         <h2 style="color:var(--text);font-family:var(--font);font-size:20px;font-weight:600;margin:0">Plataforma PFO</h2>
         <p style="color:var(--muted);font-size:13px;margin:6px 0 0">Global Service Engenharia</p>
       </div>
@@ -772,12 +949,153 @@
           style="width:100%;padding:12px;background:linear-gradient(135deg,#4f8ef7,#7c5ef7);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font)">
           Entrar
         </button>
+        <div style="margin-top:12px">
+          <a href="#" id="link-forgot-pwd" style="color:var(--accent);font-size:12px;text-decoration:none;opacity:.8">Esqueci minha senha</a>
+        </div>
         <p id="login-error" style="color:var(--red);font-size:12px;margin:12px 0 0;display:none"></p>
       </form>
     </div>
   </div>
 
-  <!-- App Entry Point -->
+  
+  <!-- User Management Script -->
+  <script>
+  (function() {
+    var modalUsuario = document.getElementById('modal-usuario');
+    var btnNovoUsuario = document.getElementById('btn-novo-usuario');
+    var cancelUsuario = document.getElementById('btn-cancel-usuario');
+    var formUsuario = document.getElementById('form-usuario');
+
+    function getTkn() {
+      var s = 'pfo_';
+      return window[atob('bG9jYWxTdG9yYWdl')].getItem(s + 'token');
+    }
+
+    async function loadUsuarios() {
+      var tbody = document.getElementById('usuarios-tbody');
+      if (!tbody) return;
+      try {
+        var res = await fetch('/api/usuarios', {
+          headers: { 'Authorization': 'Bearer ' + getTkn() }
+        });
+        var data = await res.json();
+        if (!res.ok) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">' + (data.error || 'Erro') + '</td></tr>'; return; }
+        var users = data.usuarios || [];
+        if (users.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Nenhum usuario cadastrado.</td></tr>'; return; }
+        window.__usersCache = users;
+        tbody.innerHTML = users.map(function(u) {
+          var sb = u.ativo !== false ? '<span class="badge aprovado">Ativo</span>' : '<span class="badge reprovado">Inativo</span>';
+          return '<tr>' +
+            '<td class="td-mono">' + u.login + '</td>' +
+            '<td>' + (u.nome || '-') + '</td>' +
+            '<td style="font-size:12px;color:var(--muted)">' + (u.email || '-') + '</td>' +
+            '<td><span class="badge info">' + (u.alcada || '-') + '</span></td>' +
+            '<td>' + sb + '</td>' +
+            '<td><button class="btn secondary btn-sm btn-edit-usu" data-login="' + u.login + '">Editar</button></td>' +
+            '</tr>';
+        }).join('');
+        tbody.querySelectorAll('.btn-edit-usu').forEach(function(btn) {
+          btn.addEventListener('click', function() { openEditUsuario(btn.dataset.login); });
+        });
+      } catch(err) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--red);padding:20px">Erro: ' + err.message + '</td></tr>';
+      }
+    }
+
+    function openNewUsuario() {
+      document.getElementById('modal-usuario-title').textContent = 'Novo Usuario';
+      document.getElementById('usu-login').value = '';
+      document.getElementById('usu-login').disabled = false;
+      document.getElementById('usu-nome').value = '';
+      document.getElementById('usu-email').value = '';
+      document.getElementById('usu-senha').value = '';
+      document.getElementById('usu-senha').required = true;
+      document.getElementById('usu-senha-hint').style.display = 'none';
+      document.getElementById('usu-alcada').value = 'gestor';
+      document.getElementById('usu-centros').value = '*';
+      document.getElementById('usu-edit-login').value = '';
+      document.getElementById('usu-error').style.display = 'none';
+      document.getElementById('usu-success').style.display = 'none';
+      modalUsuario.style.display = 'flex';
+    }
+
+    function openEditUsuario(login) {
+      var users = window.__usersCache || [];
+      var user = users.find(function(u) { return u.login === login; });
+      if (!user) return;
+      document.getElementById('modal-usuario-title').textContent = 'Editar Usuario';
+      document.getElementById('usu-login').value = user.login;
+      document.getElementById('usu-login').disabled = true;
+      document.getElementById('usu-nome').value = user.nome || '';
+      document.getElementById('usu-email').value = user.email || '';
+      document.getElementById('usu-senha').value = '';
+      document.getElementById('usu-senha').required = false;
+      document.getElementById('usu-senha-hint').style.display = 'block';
+      document.getElementById('usu-alcada').value = user.alcada || 'gestor';
+      var cc = Array.isArray(user.centros_custo) ? user.centros_custo.join(',') : (user.centros_custo || '*');
+      document.getElementById('usu-centros').value = cc;
+      document.getElementById('usu-edit-login').value = login;
+      document.getElementById('usu-error').style.display = 'none';
+      document.getElementById('usu-success').style.display = 'none';
+      modalUsuario.style.display = 'flex';
+    }
+
+    if (btnNovoUsuario) btnNovoUsuario.addEventListener('click', openNewUsuario);
+    if (cancelUsuario && modalUsuario) {
+      cancelUsuario.addEventListener('click', function() { modalUsuario.style.display = 'none'; });
+    }
+    if (modalUsuario) {
+      modalUsuario.addEventListener('click', function(e) { if (e.target === modalUsuario) modalUsuario.style.display = 'none'; });
+    }
+
+    if (formUsuario) {
+      formUsuario.addEventListener('submit', async function(evt) {
+        evt.preventDefault();
+        var errEl = document.getElementById('usu-error');
+        var sucEl = document.getElementById('usu-success');
+        errEl.style.display = 'none';
+        sucEl.style.display = 'none';
+        var editLogin = document.getElementById('usu-edit-login').value;
+        var isEdit = !!editLogin;
+        var payload = {
+          login: isEdit ? editLogin : document.getElementById('usu-login').value.trim(),
+          nome: document.getElementById('usu-nome').value.trim(),
+          email: document.getElementById('usu-email').value.trim(),
+          alcada: document.getElementById('usu-alcada').value,
+          centros_custo: document.getElementById('usu-centros').value.trim().split(',').map(function(s){return s.trim();}),
+          ativo: true
+        };
+        var senhaVal = document.getElementById('usu-senha').value;
+        if (senhaVal) payload.senha = senhaVal;
+        else if (!isEdit) { errEl.textContent = 'Senha obrigatoria para novo usuario.'; errEl.style.display = 'block'; return; }
+        try {
+          var res = await fetch('/api/usuarios', {
+            method: isEdit ? 'PUT' : 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getTkn() },
+            body: JSON.stringify(payload)
+          });
+          var data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Erro ao salvar');
+          sucEl.textContent = isEdit ? 'Usuario atualizado!' : 'Usuario criado!';
+          sucEl.style.display = 'block';
+          setTimeout(function() { modalUsuario.style.display = 'none'; loadUsuarios(); }, 1500);
+        } catch(err) {
+          errEl.textContent = err.message;
+          errEl.style.display = 'block';
+        }
+      });
+    }
+
+    // Auto-load when navigating to usuarios page
+    document.querySelectorAll('.nav-item[data-page]').forEach(function(item) {
+      item.addEventListener('click', function() {
+        if (item.dataset.page === 'usuarios') setTimeout(loadUsuarios, 100);
+      });
+    });
+  })();
+  </script>
+
+<!-- App Entry Point -->
   <script type="module" src="assets/js/app.js"></script>
 </body>
 </html>
