@@ -17,6 +17,31 @@ import { state } from '../state.js';
 const MAX_RETRIES = 3;
 const RETRY_DELAYS = [1000, 2000, 4000]; // exponential backoff
 
+// sessionStorage cache — survives page reloads, clears on tab close
+const SESSION_CACHE_KEY = 'pfo_data_cache';
+const SESSION_CACHE_TS_KEY = 'pfo_data_cache_ts';
+const SESSION_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+function getSessionCache() {
+  try {
+    const ts = parseInt(sessionStorage.getItem(SESSION_CACHE_TS_KEY), 10);
+    if (!ts || Date.now() - ts > SESSION_CACHE_TTL) return null;
+    const raw = sessionStorage.getItem(SESSION_CACHE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function setSessionCache(data) {
+  try {
+    sessionStorage.setItem(SESSION_CACHE_KEY, JSON.stringify(data));
+    sessionStorage.setItem(SESSION_CACHE_TS_KEY, String(Date.now()));
+  } catch (e) {
+    console.warn('[GitHub] sessionStorage write failed:', e.message);
+  }
+}
+
 /**
  * Load platform data with retry logic.
  * Uses /api/data proxy which authenticates via server-side GITHUB_TOKEN.
@@ -25,10 +50,33 @@ const RETRY_DELAYS = [1000, 2000, 4000]; // exponential backoff
  * @returns {Promise<Object>} The platform data
  */
 export async function loadPlatformData(forceRefresh = false) {
+  // Use data already fetched by the inline bootstrap script (avoids duplicate fetch)
+  if (!forceRefresh && !state.isCacheValid && window.__PFO_BOOTSTRAP_DATA) {
+    console.log('[GitHub] Using bootstrap data from inline script');
+    const bootstrapData = normalizeData(window.__PFO_BOOTSTRAP_DATA);
+    state.data = bootstrapData;
+    state.isLoading = false;
+    delete window.__PFO_BOOTSTRAP_DATA;
+    setSessionCache(bootstrapData);
+    return bootstrapData;
+  }
+
   // Return cached data if still valid
   if (!forceRefresh && state.isCacheValid) {
     console.log('[GitHub] Using cached data');
     return state.data;
+  }
+
+  // Check sessionStorage cache (survives page reloads)
+  if (!forceRefresh) {
+    const cached = getSessionCache();
+    if (cached) {
+      console.log('[GitHub] Using sessionStorage cached data');
+      const normalizedData = normalizeData(cached);
+      state.data = normalizedData;
+      state.isLoading = false;
+      return normalizedData;
+    }
   }
 
   state.isLoading = true;
@@ -72,10 +120,11 @@ export async function loadPlatformData(forceRefresh = false) {
         throw new Error(data.error);
       }
 
-      // Normalize and store
+      // Normalize, store, and persist to sessionStorage
       const normalizedData = normalizeData(data);
       state.data = normalizedData;
       state.isLoading = false;
+      setSessionCache(normalizedData);
 
       const pfoCount = normalizedData.pfos?.length || 0;
       const ccCount = Object.keys(normalizedData.centros_custo || {}).length;
@@ -123,6 +172,7 @@ function normalizeData(data) {
  */
 export async function refreshData() {
   state.invalidateCache();
+  try { sessionStorage.removeItem(SESSION_CACHE_KEY); sessionStorage.removeItem(SESSION_CACHE_TS_KEY); } catch {}
   return loadPlatformData(true);
 }
 
