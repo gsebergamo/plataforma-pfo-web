@@ -23,33 +23,17 @@ module.exports = async function handler(req, res) {
   console.log('[data] Fetching data from repo:', repo);
 
   try {
-    // Step 1: Get file SHA from contents endpoint
-    const metaData = await makeRequest(
-      'api.github.com',
-      '/repos/' + repo + '/contents/dados/plataforma.json',
-      ghToken
-    );
-
-    if (!metaData || !metaData.sha) {
-      console.error('[data] No SHA found in metadata response:', JSON.stringify(metaData).substring(0, 200));
-      return res.status(500).json({
-        error: 'Arquivo dados/plataforma.json não encontrado no repositório ' + repo,
-      });
-    }
-
-    console.log('[data] File SHA:', metaData.sha, '| Size:', metaData.size, 'bytes');
-
-    // Step 2: Get raw blob content (supports files > 1MB)
+    // Single call using raw content Accept header (instead of 2 sequential calls)
     const rawData = await makeRequest(
       'api.github.com',
-      '/repos/' + repo + '/git/blobs/' + metaData.sha,
+      '/repos/' + repo + '/contents/dados/plataforma.json',
       ghToken,
       'application/vnd.github.raw+json'
     );
 
     // Validate we got actual data
     if (!rawData || typeof rawData !== 'object') {
-      console.error('[data] Invalid data received from blob endpoint');
+      console.error('[data] Invalid data received from GitHub');
       return res.status(500).json({ error: 'Dados inválidos recebidos do GitHub' });
     }
 

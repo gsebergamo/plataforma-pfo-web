@@ -40,21 +40,10 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const metaData = await makeRequest(
-      'api.github.com',
-      '/repos/' + repo + '/contents/dados/plataforma.json',
-      ghToken
-    );
-
-    if (!metaData || !metaData.sha) {
-      return res.status(500).json({
-        error: 'Arquivo dados/plataforma.json não encontrado no repositório ' + repo,
-      });
-    }
-
+    // Single call using raw content Accept header (instead of 2 sequential calls)
     const rawData = await makeRequest(
       'api.github.com',
-      '/repos/' + repo + '/git/blobs/' + metaData.sha,
+      '/repos/' + repo + '/contents/dados/plataforma.json',
       ghToken,
       'application/vnd.github.raw+json'
     );
