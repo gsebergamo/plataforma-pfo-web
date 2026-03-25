@@ -24,6 +24,7 @@ export function getStatus(pfo, aprovacoes) {
 
   if (st === 'aprovado') return 'aprovado';
   if (st === 'reprovado') return 'reprovado';
+    if (st === 'validado') return 'validado';
   if (
     st.includes('aguardando') ||
     st.includes('validacao') ||
