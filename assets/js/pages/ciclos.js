@@ -14,7 +14,7 @@
  * resets to "enviado" (Enviado / Em analise) and the flow restarts.
  */
 
-import { state } from '../state.js';h
+import { state } from '../state.js';
 import {
     safeNumber, formatNumber, getCurrentMonth, formatMonth,
     formatDate, marginColor,
