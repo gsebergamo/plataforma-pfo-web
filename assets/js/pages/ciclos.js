@@ -14,7 +14,7 @@
  * resets to "enviado" (Enviado / Em analise) and the flow restarts.
  */
 
-import { state } from '../state.js';
+import { state } from '../state.js';h
 import {
     safeNumber, formatNumber, getCurrentMonth, formatMonth,
     formatDate, marginColor,
@@ -89,8 +89,8 @@ function buildPfoList(data, mes) {
   return list;
 }
 
-export function renderCiclos() {
-    const data = state.data;
+export function renderCiclos(dataParam) {
+    const data = dataParam || state.data;
     if (!data) return;
 
   const mes = getCurrentMonth();
@@ -114,7 +114,7 @@ export function renderCiclos() {
   tbody.innerHTML = items
       .map((item) => {
               const mc = marginColor(item.mg);
-              const dt = item.enviadoEm ? formatDate(item.enviadoEm) : '\u2014';
+              const dt = item.enviadoEm ? item.enviadoEm : '\u2014';
 
                  return `<tr>
                          <td class="td-mono">${item.nome}</td>
