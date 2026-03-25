@@ -18,6 +18,7 @@ export function badge(status) {
     reprovado: 'reprovado',
     enviado: 'enviado',
     aguardando: 'aguardando',
+        validado: 'validado',
   };
   const label = labels[status] || status || 'pendente';
   const cls = status === 'aguardando' ? 'enviado' : (labels[status] ? status : 'pendente');
