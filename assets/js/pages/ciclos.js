@@ -1,56 +1,128 @@
 /**
- * Ciclos & Governança Page
+ * Ciclos & Governanca Page
  * Plataforma PFO — GSE
+ *
+ * Displays ALL 22 cost centers from centros_custo with pfo_mensal status.
+ * Status mapping:
+ *   enviado        -> "Enviado / Em analise"
+ *   validado       -> "Validado"
+ *   aprovado       -> "Aprovado"
+ *   reprovado      -> "Em revisao"
+ *   pendente       -> "Pendente"
+ *
+ * After a rejection, if the user uploads a new file the status
+ * resets to "enviado" (Enviado / Em analise) and the flow restarts.
  */
 
 import { state } from '../state.js';
 import {
-  safeNumber, formatNumber, getCurrentMonth, formatMonth,
-  formatDate, marginColor,
+    safeNumber, formatNumber, getCurrentMonth, formatMonth,
+    formatDate, marginColor,
 } from '../utils/format.js';
 import { badge, tableEmpty } from '../components/ui.js';
-import { getStatus } from './shared.js';
 
-export function renderCiclos() {
-  const data = state.data;
-  if (!data) return;
+/**
+ * Map raw status to display label.
+ */
+function statusLabel(raw) {
+    const map = {
+          enviado: 'Enviado / Em analise',
+          validado: 'Validado',
+          aprovado: 'Aprovado',
+          reprovado: 'Em revisao',
+          pendente: 'Pendente',
+    };
+    return map[raw] || raw || 'Pendente';
+}
 
-  const pfos = data.pfos || [];
-  const apr = data.aprovacoes || {};
-  const mes = getCurrentMonth();
+/**
+ * Build the list of PFOs from centros_custo with pfo_mensal for the
+ * current month.  Falls back to the legacy data.pfos array when a CC
+ * has a matching uploaded PFO (so we can still show receita / margem).
+ */
+function buildPfoList(data, mes) {
+    const cc = data.centros_custo || {};
+    const pfos = data.pfos || [];
+    const list = [];
 
-  const cicloInfo = document.getElementById('ciclo-info');
-  if (cicloInfo) cicloInfo.textContent = `Ciclo ${formatMonth(mes)} · ${pfos.length} PFOs`;
+  for (const [code, centro] of Object.entries(cc)) {
+        if (!centro.requer_pfo) continue;
+        const mensal = centro.pfo_mensal && centro.pfo_mensal[mes];
+        if (!mensal && centro.status !== 'ativo') continue;
 
-  const cicloBadge = document.getElementById('ciclo-badge');
-  if (cicloBadge) cicloBadge.textContent = pfos.length + ' PFOs';
+      // Try to find a matching uploaded PFO for receita/margem
+      const pfo = pfos.find(p =>
+              p.projeto && centro.nome && (
+                        centro.nome.includes(p.projeto) || p.projeto.includes(centro.nome)
+                      )
+                                );
 
-  const tbody = document.getElementById('ciclos-tbody');
-  if (!tbody) return;
+      const rc = pfo ? safeNumber((pfo.dre?.receita?.projetado || 0) * 1000) : 0;
+        const cs = pfo ? safeNumber((pfo.dre?.custo?.projetado || 0) * 1000) : 0;
+        const mg = rc > 0 ? ((rc - cs) / rc) * 100 : 0;
 
-  if (!pfos.length) {
-    tbody.innerHTML = tableEmpty(6, 'Nenhum PFO neste ciclo');
-    return;
+      let status = 'pendente';
+        let enviadoEm = '';
+      let enviadoPor = '';
+
+      if (mensal) {
+              status = mensal.status || 'enviado';
+              enviadoEm = mensal.enviado_em || '';
+              enviadoPor = mensal.enviado_por_nome || '';
+      }
+
+      list.push({
+              code,
+              nome: centro.nome || code,
+              status,
+              enviadoEm,
+              enviadoPor,
+              rc,
+              mg,
+      });
   }
 
-  tbody.innerHTML = pfos
-    .map((p) => {
-      const rc = safeNumber((p.dre?.receita?.projetado || 0) * 1000);
-      const cs = safeNumber((p.dre?.custo?.projetado || 0) * 1000);
-      const mg = rc > 0 ? ((rc - cs) / rc) * 100 : 0;
-      const st = getStatus(p, apr);
-      const mc = marginColor(mg);
-      const dt = formatDate(p.data_upload);
-      const arquivo = (p.arquivo || '—').replace('.xlsx', '').substring(0, 30);
+  // Sort: pendente last, then reprovado, enviado, validado, aprovado
+  const order = { aprovado: 0, validado: 1, enviado: 2, reprovado: 3, pendente: 4 };
+    list.sort((a, b) => (order[a.status] ?? 5) - (order[b.status] ?? 5));
 
-      return `<tr>
-        <td class="td-mono">${p.projeto || '—'}</td>
-        <td style="font-size:11px;color:var(--muted)">${arquivo}</td>
-        <td class="td-mono">R$ ${formatNumber(rc / 1000)}k</td>
-        <td style="color:${mc};font-family:var(--mono);font-size:11px">${mg.toFixed(1)}%</td>
-        <td>${badge(st)}</td>
-        <td class="td-muted td-mono">${dt}</td>
-      </tr>`;
-    })
-    .join('');
+  return list;
+}
+
+export function renderCiclos() {
+    const data = state.data;
+    if (!data) return;
+
+  const mes = getCurrentMonth();
+    const items = buildPfoList(data, mes);
+
+  // Header info
+  const cicloInfo = document.getElementById('ciclo-info');
+    if (cicloInfo) cicloInfo.textContent = `Ciclo ${formatMonth(mes)} \u00b7 ${items.length} PFOs`;
+
+  const cicloBadge = document.getElementById('ciclo-badge');
+    if (cicloBadge) cicloBadge.textContent = items.length + ' PFOs';
+
+  const tbody = document.getElementById('ciclos-tbody');
+    if (!tbody) return;
+
+  if (!items.length) {
+        tbody.innerHTML = tableEmpty(6, 'Nenhum PFO neste ciclo');
+        return;
+  }
+
+  tbody.innerHTML = items
+      .map((item) => {
+              const mc = marginColor(item.mg);
+              const dt = item.enviadoEm ? formatDate(item.enviadoEm) : '\u2014';
+
+                 return `<tr>
+                         <td class="td-mono">${item.nome}</td>
+                                 <td style="font-size:11px;color:var(--muted)">${item.code}</td>
+                                         <td style="font-size:11px;color:var(--muted)">${item.enviadoPor}</td>
+                                                 <td>${badge(item.status)}</td>
+                                                         <td class="td-muted td-mono">${dt}</td>
+                                                               </tr>`;
+      })
+      .join('');
 }
