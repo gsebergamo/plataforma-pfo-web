@@ -92,5 +92,6 @@ Browser (SPA)
 
 - **Dados**: JSON armazenado no GitHub como pseudo-banco de dados
 - **Cache**: 5 minutos no client-side, 2 minutos no CDN
+- 
 - **Autenticação**: Abstração preparada para integração futura
 - **Estado**: Centralizado em `state.js` com subscriptions
