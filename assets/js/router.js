@@ -8,13 +8,14 @@
 
 const PAGE_TITLES = {
   dashboard: 'Dashboard Executivo',
+  dre: 'DRE',
   ciclos: 'Ciclos & Status',
   upload: 'Upload de PFO',
   aprovacoes: 'Aprovações',
   centros: 'Centros de Custo',
   agente: 'Agente IA',
   relatorios: 'Relatórios',
-    usuarios: 'Gestão de Usuários',
+  usuarios: 'Gestão de Usuários',
 };
 
 let _currentPage = 'dashboard';
