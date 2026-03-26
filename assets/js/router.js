@@ -72,6 +72,8 @@ export function navigateTo(pageName, updateHash = true) {
     const dashIdx = children.findIndex(c => c.id === 'page-dashboard');
     const ciclosIdx = children.findIndex(c => c.id === 'page-ciclos');
     for (let i = dashIdx + 1; i < ciclosIdx; i++) {
+      // Skip .page elements — they are controlled by the active class toggle above
+      if (children[i].classList.contains('page')) continue;
       children[i].style.display = pageName === 'dashboard' ? '' : 'none';
     }
   }
